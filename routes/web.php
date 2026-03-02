@@ -34,6 +34,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/premises/create', [PremiseController::class, 'create'])
         ->name('premises.create');
 
+    Route::get('/premises/{premise}/edit', [PremiseController::class, 'edit'])
+        ->name('premises.edit');
+
+    Route::put('/premises/{premise}', [PremiseController::class, 'update'])
+        ->name('premises.update');
+
     Route::post('/premises', [PremiseController::class, 'store'])
         ->name('premises.store');
 });

@@ -63,7 +63,7 @@
                         </button>
                         <div class="kt-menu-dropdown kt-menu-default w-full max-w-[200px]" data-kt-menu-dismiss="true">
                             <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="#">
+                                <a class="kt-menu-link" href="{{ route('premises.edit', $premise) }}">
                                     <span class="kt-menu-icon">
                                         <i class="ki-filled ki-setting-3"></i>
                                     </span>
