@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PremiseController;
 use App\Livewire\Clients\Index as ClientsIndex;
+use App\Livewire\Premises\Index as PremisesIndex;
 use App\Livewire\Demo1\Index as Demo1Index;
 use App\Livewire\Demo2\Index as Demo2Index;
 use App\Livewire\Demo3\Index as Demo3Index;
@@ -23,6 +25,18 @@ Route::get('/', function () {
 Route::get('/clients', ClientsIndex::class)
     ->middleware(['auth', 'verified'])
     ->name('clients.index');
+
+Route::get('/premises', PremisesIndex::class)
+    ->middleware(['auth', 'verified'])
+    ->name('premises.index');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/premises/create', [PremiseController::class, 'create'])
+        ->name('premises.create');
+
+    Route::post('/premises', [PremiseController::class, 'store'])
+        ->name('premises.store');
+});
 
 Route::get('/demo1', Demo1Index::class)->name('demo1.index');
 Route::get('/demo2', Demo2Index::class)->name('demo2.index');
