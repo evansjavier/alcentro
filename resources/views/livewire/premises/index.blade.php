@@ -71,7 +71,7 @@
                                 </a>
                             </div>
                             <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="#">
+                                <a class="kt-menu-link" href="{{ route('contracts.create', ['premise' => $premise->id]) }}">
                                     <span class="kt-menu-icon">
                                         <i class="ki-filled ki-briefcase"></i>
                                     </span>

@@ -20,7 +20,8 @@ class Contract extends Model
         'advertising_pct',
         'start_date',
         'end_date',
-        'is_active',
+        'status',
+        'notes',
     ];
 
     protected function casts(): array
@@ -32,9 +33,14 @@ class Contract extends Model
             'advertising_pct' => 'decimal:2',
             'start_date' => 'date',
             'end_date' => 'date',
-            'is_active' => 'boolean',
+            'status' => 'string',
         ];
     }
+
+    public const STATUS_ACTIVO = 'activo';
+    public const STATUS_PENDIENTE = 'pendiente_firma';
+    public const STATUS_FINALIZADO = 'finalizado';
+    public const STATUS_RESCINDIDO = 'rescindido';
 
     public function client(): BelongsTo
     {

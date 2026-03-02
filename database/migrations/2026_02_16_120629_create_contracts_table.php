@@ -21,7 +21,8 @@ return new class extends Migration
             $table->decimal('advertising_pct', 5, 2)->default(10.00);
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->enum('status', ['activo', 'pendiente_firma', 'finalizado', 'rescindido'])->default('activo');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
