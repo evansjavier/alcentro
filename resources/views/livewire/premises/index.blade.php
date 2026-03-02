@@ -33,9 +33,12 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-7.5">
         @forelse ($premises as $premise)
             <div class="kt-card relative flex flex-col gap-3 p-7">
-                <div class="flex items-center justify-between gap-2 pr-10">
-                    <div class="flex items-center gap-2">
+                <div class="flex items-start justify-between gap-2 pr-10">
+                    <div class="flex flex-col leading-tight">
                         <span class="text-xl font-semibold text-mono">{{ $premise->code }}</span>
+                        @if ($premise->activeContract && $premise->activeContract->client)
+                            <span class="text-sm text-secondary-foreground">{{ $premise->activeContract->client->name }}</span>
+                        @endif
                     </div>
                     <div class="flex items-center gap-2">
                         @php
@@ -70,14 +73,33 @@
                                     <span class="kt-menu-title">Editar local</span>
                                 </a>
                             </div>
-                            <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="{{ route('contracts.create', ['premise' => $premise->id]) }}">
-                                    <span class="kt-menu-icon">
-                                        <i class="ki-filled ki-briefcase"></i>
-                                    </span>
-                                    <span class="kt-menu-title">Asignar contrato</span>
-                                </a>
-                            </div>
+                            @if ($premise->activeContract)
+                                <div class="kt-menu-item">
+                                    <a class="kt-menu-link" href="{{ route('contracts.show', $premise->activeContract) }}">
+                                        <span class="kt-menu-icon">
+                                            <i class="ki-filled ki-eye"></i>
+                                        </span>
+                                        <span class="kt-menu-title">Ver contrato</span>
+                                    </a>
+                                </div>
+                                <div class="kt-menu-item">
+                                    <a class="kt-menu-link" href="{{ route('contracts.create', ['premise' => $premise->id]) }}">
+                                        <span class="kt-menu-icon">
+                                            <i class="ki-filled ki-briefcase"></i>
+                                        </span>
+                                        <span class="kt-menu-title">Crear nuevo contrato</span>
+                                    </a>
+                                </div>
+                            @else
+                                <div class="kt-menu-item">
+                                    <a class="kt-menu-link" href="{{ route('contracts.create', ['premise' => $premise->id]) }}">
+                                        <span class="kt-menu-icon">
+                                            <i class="ki-filled ki-briefcase"></i>
+                                        </span>
+                                        <span class="kt-menu-title">Asignar contrato</span>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

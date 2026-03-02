@@ -13,7 +13,8 @@ use Illuminate\View\View;
 
 class ContractController extends Controller
 {
-    private const STATUSES = [
+
+    public const STATUSES = [
         Contract::STATUS_ACTIVO,
         Contract::STATUS_PENDIENTE,
         Contract::STATUS_FINALIZADO,
@@ -34,6 +35,13 @@ class ContractController extends Controller
             'premises' => $premises,
             'selectedPremiseId' => $selectedPremiseId,
         ]);
+    }
+
+    public function show(Contract $contract): View
+    {
+        $contract->load(['client', 'premise']);
+
+        return view('contracts.show', compact('contract'));
     }
 
     public function store(Request $request): RedirectResponse

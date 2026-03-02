@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PremiseController;
 use App\Http\Controllers\ContractController;
 use App\Livewire\Clients\Index as ClientsIndex;
+use App\Livewire\Contracts\Index as ContractsIndex;
 use App\Livewire\Premises\Index as PremisesIndex;
 use App\Livewire\Demo1\Index as Demo1Index;
 use App\Livewire\Demo2\Index as Demo2Index;
@@ -44,11 +45,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/premises', [PremiseController::class, 'store'])
         ->name('premises.store');
 
+    Route::get('/contracts', ContractsIndex::class)
+        ->name('contracts.index');
+
     Route::get('/contracts/create', [ContractController::class, 'create'])
         ->name('contracts.create');
 
     Route::post('/contracts', [ContractController::class, 'store'])
         ->name('contracts.store');
+
+    Route::get('/contracts/{contract}', [ContractController::class, 'show'])
+        ->name('contracts.show');
 });
 
 Route::get('/demo1', Demo1Index::class)->name('demo1.index');

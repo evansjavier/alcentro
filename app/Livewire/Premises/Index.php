@@ -42,6 +42,7 @@ class Index extends Component
     public function render()
     {
         $premises = Premise::query()
+            ->with(['activeContract.client'])
             ->when($this->search, function ($query) {
                 $term = '%' . $this->search . '%';
                 $query->where('code', 'like', $term);

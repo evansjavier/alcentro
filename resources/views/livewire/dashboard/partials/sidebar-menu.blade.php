@@ -30,7 +30,7 @@
             </div>
 
             <div class="kt-menu-item">
-                <a class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent" href="#">
+                <a class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent" href="{{ route('contracts.index') }}">
                     <span class="kt-menu-icon items-start text-lg text-secondary-foreground">
                         <i class="ki-filled ki-briefcase"></i>
                     </span>
