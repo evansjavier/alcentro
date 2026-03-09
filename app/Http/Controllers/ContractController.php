@@ -103,4 +103,37 @@ class ContractController extends Controller
             ->route('premises.index')
             ->with('status', 'Contrato creado y local asignado correctamente.');
     }
+
+    public function terminate(Contract $contract): View
+    {
+        $contract->load(['client', 'premise']);
+        
+        return view('contracts.terminate', compact('contract'));
+    }
+
+    public function processTermination(Request $request, Contract $contract): RedirectResponse
+    {
+        $data = $request->validate([
+            'end_date' => ['required', 'date', 'after_or_equal:' . $contract->start_date?->format('Y-m-d')],
+            'closing_note' => ['nullable', 'string'],
+        ]);
+
+        DB::transaction(function () use ($contract, $data) {
+            $contract->update([
+                'status' => Contract::STATUS_FINALIZADO,
+                'end_date' => $data['end_date'],
+                'closing_note' => $data['closing_note'],
+                'closed_at' => now(),
+            ]);
+
+            if ($contract->premise_id) {
+                // Return premise to available
+                Premise::where('id', $contract->premise_id)->update(['status' => 'available']);
+            }
+        });
+
+        return redirect()
+            ->route('contracts.show', $contract)
+            ->with('status', 'Contrato finalizado correctamente.');
+    }
 }

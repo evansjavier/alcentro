@@ -56,7 +56,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/contracts/{contract}', [ContractController::class, 'show'])
         ->name('contracts.show');
-});
+    Route::get('/contracts/{contract}/terminate', [ContractController::class, 'terminate'])
+        ->name('contracts.terminate');
+
+    Route::post('/contracts/{contract}/terminate', [ContractController::class, 'processTermination'])
+        ->name('contracts.processTermination');});
 
 Route::get('/demo1', Demo1Index::class)->name('demo1.index');
 Route::get('/demo2', Demo2Index::class)->name('demo2.index');

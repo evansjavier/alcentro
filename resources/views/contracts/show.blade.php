@@ -9,11 +9,27 @@
                 <span class="text-sm text-secondary-foreground">{{ $contract->created_at?->format('Y-m-d H:i') }}</span>
             </div>
             <div class="flex items-center gap-2">
+                @if(in_array($contract->status, ['activo', 'pendiente_firma']))
+                    <a class="kt-btn kt-btn-danger kt-btn-outline" href="{{ route('contracts.terminate', $contract) }}">
+                        {{ __('Finalizar Contrato') }}
+                    </a>
+                @endif
                 <a class="kt-btn kt-btn-outline" href="{{ route('contracts.index') }}">{{ __('Volver') }}</a>
             </div>
         </div>
 
-        <div class="kt-card">
+        @if (session('status'))
+            <div class="kt-alert kt-alert-success mt-4">
+                <div class="flex items-start gap-3">
+                    <i class="ki-filled ki-check"></i>
+                    <div class="flex flex-col gap-1">
+                        <span class="font-semibold">{{ session('status') }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <div class="kt-card mt-5">
             <div class="kt-card-content p-6 grid gap-4">
                 <div class="flex flex-col gap-1">
                     <span class="text-sm text-secondary-foreground">{{ __('Empresa') }}</span>
@@ -69,9 +85,27 @@
                 </div>
 
                 @if ($contract->notes)
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 mt-3">
                         <span class="text-sm text-secondary-foreground">{{ __('Notas') }}</span>
                         <div class="text-base leading-relaxed whitespace-pre-line">{{ $contract->notes }}</div>
+                    </div>
+                @endif
+
+                @if ($contract->closing_note || $contract->closed_at)
+                    <div class="pt-4 mt-4 border-t border-gray-200 grid gap-4">
+                        <h4 class="text-sm font-semibold">{{ __('Información de finalización') }}</h4>
+                        @if ($contract->closed_at)
+                            <div class="flex flex-col gap-1">
+                                <span class="text-sm text-secondary-foreground">{{ __('Fecha de registro de cierre') }}</span>
+                                <span class="text-base">{{ $contract->closed_at->format('Y-m-d H:i:s') }}</span>
+                            </div>
+                        @endif
+                        @if ($contract->closing_note)
+                            <div class="flex flex-col gap-1">
+                                <span class="text-sm text-secondary-foreground">{{ __('Nota de cierre') }}</span>
+                                <div class="text-base leading-relaxed whitespace-pre-line">{{ $contract->closing_note }}</div>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>

@@ -22,6 +22,8 @@ class Contract extends Model
         'end_date',
         'status',
         'notes',
+        'closing_note',
+        'closed_at',
     ];
 
     protected function casts(): array
@@ -34,6 +36,7 @@ class Contract extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'status' => 'string',
+            'closed_at' => 'datetime',
         ];
     }
 
