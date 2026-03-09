@@ -27,6 +27,16 @@ class Premise extends Model
         ];
     }
 
+    public const STATUS_AVAILABLE = 'available';
+    public const STATUS_RENTED = 'rented';
+    public const STATUS_MAINTENANCE = 'maintenance';
+
+    public const STATUSES = [
+        self::STATUS_AVAILABLE,
+        self::STATUS_RENTED,
+        self::STATUS_MAINTENANCE,
+    ];
+
     public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class);

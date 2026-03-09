@@ -26,7 +26,7 @@ class PremiseController extends Controller
             'code' => ['required', 'string', 'max:255', 'unique:premises,code'],
             'square_meters' => ['required', 'numeric', 'min:0'],
             'suggested_rent' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'in:available,rented,maintenance'],
+            'status' => ['required', Rule::in(Premise::STATUSES)],
         ]);
 
         Premise::create($data);
@@ -42,7 +42,7 @@ class PremiseController extends Controller
             'code' => ['required', 'string', 'max:255', Rule::unique('premises', 'code')->ignore($premise->id)],
             'square_meters' => ['required', 'numeric', 'min:0'],
             'suggested_rent' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'in:available,rented,maintenance'],
+            'status' => ['required', Rule::in(Premise::STATUSES)],
         ]);
 
         $premise->update($data);

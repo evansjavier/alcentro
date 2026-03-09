@@ -26,7 +26,7 @@ class ContractController extends Controller
         $selectedPremiseId = $request->integer('premise');
 
         $clients = Client::orderBy('name')->get(['id', 'name']);
-        $premises = Premise::where('status', 'available')
+        $premises = Premise::where('status', Premise::STATUS_AVAILABLE)
             ->orderBy('code')
             ->get(['id', 'code', 'square_meters']);
 
@@ -50,7 +50,7 @@ class ContractController extends Controller
             'client_id' => ['required', Rule::exists('clients', 'id')],
             'premise_id' => [
                 'required',
-                Rule::exists('premises', 'id')->where(fn ($q) => $q->where('status', 'available')),
+                Rule::exists('premises', 'id')->where(fn ($q) => $q->where('status', Premise::STATUS_AVAILABLE)),
             ],
             'rent_amount' => ['required', 'numeric', 'min:0'],
             'payment_day' => ['required', 'integer', 'min:1', 'max:28'],
@@ -88,14 +88,14 @@ class ContractController extends Controller
             $premise = Premise::lockForUpdate()->findOrFail($data['premise_id']);
 
             // Double-check availability in transaction
-            if ($premise->status !== 'available') {
+            if ($premise->status !== Premise::STATUS_AVAILABLE) {
                 abort(422, 'El local ya no está disponible.');
             }
 
             Contract::create($data);
 
             if (in_array($data['status'], [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE], true)) {
-                $premise->update(['status' => 'rented']);
+                $premise->update(['status' => Premise::STATUS_RENTED]);
             }
         });
 
@@ -128,7 +128,7 @@ class ContractController extends Controller
 
             if ($contract->premise_id) {
                 // Return premise to available
-                Premise::where('id', $contract->premise_id)->update(['status' => 'available']);
+                Premise::where('id', $contract->premise_id)->update(['status' => Premise::STATUS_AVAILABLE]);
             }
         });
 
