@@ -54,9 +54,31 @@ class ContractController extends Controller
             ],
             'rent_amount' => ['required', 'numeric', 'min:0'],
             'payment_day' => ['required', 'integer', 'min:1', 'max:28'],
-            'maintenance_pct' => ['required', 'numeric', 'min:0'],
-            'advertising_pct' => ['required', 'numeric', 'min:0'],
-            'start_date' => ['required', 'date'],
+            'maintenance_pct' => ['required', 'numeric', 'min:0', 'max:50'],
+            'advertising_pct' => ['required', 'numeric', 'min:0', 'max:50'],
+            'start_date' => [
+                'required', 
+                'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (!$request->premise_id) return;
+                    
+                    $endDate = $request->end_date;
+                    
+                    $overlap = Contract::where('premise_id', $request->premise_id)
+                        ->whereIn('status', [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE])
+                        ->where(function ($query) use ($value, $endDate) {
+                            $query->where('start_date', '<=', $endDate ?? '9999-12-31')
+                                ->where(function ($q) use ($value) {
+                                    $q->where('end_date', '>=', $value)
+                                      ->orWhereNull('end_date');
+                                });
+                        })->exists();
+
+                    if ($overlap) {
+                        $fail('El local seleccionado ya tiene un contrato activo que se solapa con este rango de fechas.');
+                    }
+                },
+            ],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['required', Rule::in(self::STATUSES)],
             'notes' => ['nullable', 'string'],
