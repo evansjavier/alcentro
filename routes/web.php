@@ -86,4 +86,8 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/invoices', \App\Livewire\Invoices\Index::class)->name('invoices.index');
     Route::get('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
+    
+    // Payments
+    Route::get('/invoices/{invoice}/payments/create', \App\Livewire\Payments\Create::class)->name('invoices.payments.create');
+    Route::get('/payments', \App\Livewire\Payments\Index::class)->name('payments.index');
 });

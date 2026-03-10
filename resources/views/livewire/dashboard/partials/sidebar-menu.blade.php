@@ -55,9 +55,9 @@
                         </a>
                     </div>
                     <div class="kt-menu-item">
-                        <div class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent">
+                        <a class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('payments.*') ? 'bg-secondary' : '' }}" href="{{ route('payments.index') }}">
                             <span class="kt-menu-title text-sm text-foreground">Pagos</span>
-                        </div>
+                        </a>
                     </div>
                     <div class="kt-menu-item">
                         <div class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent">

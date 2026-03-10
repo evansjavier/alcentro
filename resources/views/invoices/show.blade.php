@@ -22,10 +22,10 @@
             
             <div class="flex gap-2">
                 @if($invoice->status !== 'paid')
-                <button class="kt-btn kt-btn-primary">
+                <a href="{{ route('invoices.payments.create', $invoice) }}" class="kt-btn kt-btn-primary">
                     <i class="ki-filled ki-wallet"></i>
                     Registrar Pago
-                </button>
+                </a>
                 @endif
             </div>
         </div>
@@ -127,8 +127,13 @@
                         @forelse($invoice->payments as $payment)
                             <tr>
                                 <td class="px-5 py-3">{{ $payment->payment_date->format('d/m/Y') }}</td>
-                                <td class="px-5 py-3">{{ $payment->description ?? 'Pago recibido' }}</td>
-                                <td class="px-5 py-3 text-right font-medium">${{ number_format((float) $payment->amount, 2, '.', ',') }}</td>
+                                <td class="px-5 py-3">
+                                    {{ $payment->method === 'cash' ? 'Efectivo' : 'Transferencia/Depósito' }}
+                                    @if($payment->reference_number)
+                                        <div class="text-xs text-muted-foreground mt-0.5">Ref: {{ $payment->reference_number }}</div>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3 text-right font-medium">${{ number_format((float) $payment->amount_received, 2, '.', ',') }}</td>
                             </tr>
                         @empty
                             <tr>
