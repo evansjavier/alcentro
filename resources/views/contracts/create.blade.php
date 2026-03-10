@@ -83,7 +83,7 @@
                         <div class="flex items-baseline flex-wrap  gap-2.5 flex-1 min-w-[220px]">
                             <label class="kt-form-label max-w-40" for="payment_day">{{ __('Día de pago') }}</label>
                             <div class="grow">
-                                <input class="kt-input" id="payment_day" name="payment_day" value="{{ old('payment_day', 5) }}" type="number" min="1" max="28">
+                                <input class="kt-input" id="payment_day" name="payment_day" value="{{ old('payment_day', min(\Carbon\Carbon::today()->day, 28)) }}" type="number" min="1" max="28">
                                 <p class="text-xs text-muted-foreground mt-1">{{ __('Se facturará cada mes, en el día elegido.') }}</p>
                                 @error('payment_day')
                                     <p class="text-sm text-destructive mt-1">{{ $message }}</p>
@@ -117,7 +117,7 @@
                         <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 flex-1 min-w-[220px]">
                             <label class="kt-form-label max-w-40" for="start_date">{{ __('Fecha inicio') }}</label>
                             <div class="grow">
-                                <input class="kt-input" id="start_date" name="start_date" value="{{ old('start_date') }}" type="date">
+                                <input class="kt-input" id="start_date" name="start_date" value="{{ old('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}" type="date">
                                 @error('start_date')
                                     <p class="text-sm text-destructive mt-1">{{ $message }}</p>
                                 @enderror
