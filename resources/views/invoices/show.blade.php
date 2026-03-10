@@ -53,40 +53,41 @@
             <div class="kt-card-content">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-input">
                     <div>
-                        <span class="text-sm text-secondary-foreground block mb-1">Local</span>
-                        <div class="font-semibold">{{ $invoice->contract?->premise?->code ?? '—' }}</div>
-                        <div class="text-sm text-muted-foreground">{{ $invoice->contract?->premise?->square_meters }} m²</div>
-                    </div>
-                    <div>
                         <span class="text-sm text-secondary-foreground block mb-1">Empresa / Inquilino</span>
-                        <div class="font-semibold">{{ $invoice->contract?->client?->name ?? '—' }}</div>
-                        <div class="text-sm text-muted-foreground">{{ $invoice->contract?->client?->business_name }}</div>
+                        <div class="font-semibold">{{ $invoice->client?->name ?? '—' }}</div>
+                        <div class="text-sm text-muted-foreground">{{ $invoice->client?->tax_id }}</div>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div>
                         <span class="text-sm text-secondary-foreground block mb-1">Periodo</span>
                         <div class="font-medium">{{ $invoice->period }}</div>
+                        <div class="text-sm text-muted-foreground mt-1">Vence: {{ $invoice->due_date?->format('d/m/Y') }}</div>
                     </div>
-                    <div>
-                        <span class="text-sm text-secondary-foreground block mb-1">Fecha límite de pago</span>
-                        <div class="font-medium">{{ $invoice->due_date?->format('d/m/Y') }}</div>
-                    </div>
-                    <div>
-                        <span class="text-sm text-secondary-foreground block mb-1">Concepto Facturado</span>
-                        <div class="font-medium">
-                            @php
-                                $typeLabel = [
-                                    'rent' => 'Renta',
-                                    'maintenance' => 'Mantenimiento',
-                                    'advertising' => 'Publicidad',
-                                    'utilities' => 'Servicios',
-                                    'late_fee' => 'Mora / Recargo',
-                                ][$invoice->type] ?? $invoice->type;
-                            @endphp
-                            {{ $typeLabel }}
-                        </div>
+                </div>
+
+                <div class="mb-8">
+                    <h4 class="text-sm font-semibold mb-3">Detalle de conceptos facturados</h4>
+                    <div class="border border-input rounded-lg overflow-hidden">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-muted/60">
+                                <tr class="text-left text-secondary-foreground">
+                                    <th class="px-4 py-2 font-medium">Concepto</th>
+                                    <th class="px-4 py-2 font-medium text-right">Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-input">
+                                @foreach($invoice->items as $item)
+                                    <tr>
+                                        <td class="px-4 py-2">
+                                            <div class="font-medium">{{ $item->description }}</div>
+                                            <div class="text-xs text-muted-foreground">Tipo: {{ $item->type_label }}</div>
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-medium">
+                                            ${{ number_format((float) $item->amount, 2, '.', ',') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -124,7 +125,6 @@
                     </thead>
                     <tbody class="divide-y divide-input">
                         @forelse($invoice->payments as $payment)
-                            <!-- Estructura lista para cuando se añada módulo de pagos -->
                             <tr>
                                 <td class="px-5 py-3">{{ $payment->payment_date->format('d/m/Y') }}</td>
                                 <td class="px-5 py-3">{{ $payment->description ?? 'Pago recibido' }}</td>
@@ -133,7 +133,7 @@
                         @empty
                             <tr>
                                 <td colspan="3" class="px-5 py-6 text-center text-muted-foreground">
-                                    Aún no hay abonos ni pagos registrados para esta factura.
+                                    Aún no hay abonos ni pagos registrados.
                                 </td>
                             </tr>
                         @endforelse

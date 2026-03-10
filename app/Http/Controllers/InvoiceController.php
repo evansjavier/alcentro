@@ -10,7 +10,7 @@ class InvoiceController extends Controller
 {
     public function show(Invoice $invoice): View
     {
-        $invoice->load(['contract.client', 'contract.premise', 'payments']);
+        $invoice->load(['client', 'items.contract.premise', 'payments']);
 
         return view('invoices.show', compact('invoice'));
     }

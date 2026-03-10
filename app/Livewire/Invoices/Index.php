@@ -14,14 +14,12 @@ class Index extends Component
 
     public string $search = '';
     public string $status = 'all';
-    public string $type = 'all';
     public string $sort = 'latest';
     public int $perPage = 15;
 
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => 'all'],
-        'type' => ['except' => 'all'],
         'sort' => ['except' => 'latest'],
         'page' => ['except' => 1],
     ];
@@ -35,11 +33,6 @@ class Index extends Component
     {
         $this->resetPage();
     }
-    
-    public function updatingType(): void
-    {
-        $this->resetPage();
-    }
 
     public function updatingSort(): void
     {
@@ -48,19 +41,15 @@ class Index extends Component
 
     public function render()
     {
-        $invoices = Invoice::with(['contract.client:id,name', 'contract.premise:id,code'])
+        $invoices = Invoice::with(['client:id,name,tax_id'])
             ->when($this->status !== 'all', function ($query) {
                 $query->where('status', $this->status);
-            })
-            ->when($this->type !== 'all', function ($query) {
-                $query->where('type', $this->type);
             })
             ->when($this->search, function ($query) {
                 $term = '%' . $this->search . '%';
                 $query->where(function ($q) use ($term) {
                     $q->where('period', 'like', $term)
-                      ->orWhereHas('contract.client', fn ($c) => $c->where('name', 'like', $term))
-                      ->orWhereHas('contract.premise', fn ($p) => $p->where('code', 'like', $term));
+                      ->orWhereHas('client', fn ($c) => $c->where('name', 'like', $term)->orWhere('tax_id', 'like', $term));
                 });
             })
             ->when($this->sort === 'oldest', fn ($q) => $q->orderBy('due_date'))

@@ -12,9 +12,8 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'contract_id',
+        'client_id',
         'period',
-        'type',
         'total_amount',
         'paid_amount',
         'due_date',
@@ -30,9 +29,14 @@ class Invoice extends Model
         ];
     }
 
-    public function contract(): BelongsTo
+    public function client(): BelongsTo
     {
-        return $this->belongsTo(Contract::class);
+        return $this->belongsTo(Client::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
     }
 
     public function payments(): HasMany

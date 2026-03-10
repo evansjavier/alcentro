@@ -7,7 +7,7 @@
             <span class="text-sm text-secondary-foreground">{{ $invoices->firstItem() ?? 0 }}-{{ $invoices->lastItem() ?? 0 }} de {{ $invoices->total() }}</span>
         </div>
         <div class="flex items-center gap-2">
-            <!-- Espacio para futuros botones como 'Nueva Factura manual' -->
+            <!-- Espacio para futuros botones -->
         </div>
     </div>
 
@@ -19,15 +19,6 @@
             <option value="paid">Pagada</option>
         </select>
         
-        <select wire:model.live="type" class="kt-input w-44">
-            <option value="all">Tipo de concepto</option>
-            <option value="rent">Renta</option>
-            <option value="maintenance">Mantenimiento</option>
-            <option value="advertising">Publicidad</option>
-            <option value="utilities">Servicios</option>
-            <option value="late_fee">Mora / Recargo</option>
-        </select>
-
         <select wire:model.live="sort" class="kt-input w-44">
             <option value="latest">Vencimiento: Más lejanas</option>
             <option value="oldest">Vencimiento: Más cercanas</option>
@@ -36,7 +27,7 @@
         <div class="flex">
             <label class="kt-input">
                 <i class="ki-filled ki-magnifier"></i>
-                <input wire:model.live.debounce.300ms="search" placeholder="Buscar por periodo, empresa o local" type="search" class="w-64" />
+                <input wire:model.live.debounce.300ms="search" placeholder="Buscar por periodo o cliente" type="search" class="w-64" />
             </label>
         </div>
     </div>
@@ -48,9 +39,8 @@
                     <thead class="text-left bg-muted/60">
                         <tr class="text-secondary-foreground">
                             <th class="px-4 py-3 font-medium">Periodo</th>        
-                            <th class="px-4 py-3 font-medium">Local/Inquilino</th>      
-                            <th class="px-4 py-3 font-medium">Concepto</th>        
-                            <th class="px-4 py-3 font-medium">Monto</th>       
+                            <th class="px-4 py-3 font-medium">Cliente / Empresa</th>      
+                            <th class="px-4 py-3 font-medium">Monto Total</th>       
                             <th class="px-4 py-3 font-medium">Vencimiento</th>
                             <th class="px-4 py-3 font-medium">Estado</th>       
                             <th class="px-4 py-3 font-medium text-right">Acciones</th>                                                                                                  
@@ -62,23 +52,10 @@
                                 <td class="px-4 py-3 font-semibold text-mono">{{ $invoice->period }}</td>                                                                       
                                 <td class="px-4 py-3">
                                     <div class="flex flex-col">
-                                        <span class="font-medium">{{ $invoice->contract?->premise?->code ?? '—' }}</span>
-                                        <span class="text-xs text-muted-foreground">{{ $invoice->contract?->client?->name ?? '—' }}</span>
+                                        <span class="font-medium">{{ $invoice->client?->name ?? '—' }}</span>
                                     </div>
-                                </td>                                                                                                
-                                <td class="px-4 py-3">
-                                    @php
-                                        $typeLabel = [
-                                            'rent' => 'Renta',
-                                            'maintenance' => 'Mantenimiento',
-                                            'advertising' => 'Publicidad',
-                                            'utilities' => 'Servicios',
-                                            'late_fee' => 'Mora',
-                                        ][$invoice->type] ?? $invoice->type;
-                                    @endphp
-                                    {{ $typeLabel }}
-                                </td>                                                                    
-                                <td class="px-4 py-3 font-medium">${{ number_format((float) $invoice->total_amount, 0, '.', ',') }}</td>                                                                    
+                                </td>                                                                                                                                                                    
+                                <td class="px-4 py-3 font-medium">${{ number_format((float) $invoice->total_amount, 2, '.', ',') }}</td>                                                                    
                                 <td class="px-4 py-3">{{ $invoice->due_date?->format('Y-m-d') }}</td>                                                                                   
                                 <td class="px-4 py-3">
                                     @php
@@ -102,7 +79,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="7">No hay facturas registradas con los filtros actuales.</td>                                                                                                         
+                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="6">No hay facturas registradas con los filtros actuales.</td>                                                                                                         
                             </tr>
                         @endforelse
                     </tbody>
