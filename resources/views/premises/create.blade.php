@@ -68,6 +68,41 @@
                             @enderror
                         </div>
                     </div>
+
+                    @php
+                        $hasActiveContract = isset($premise) ? \App\Models\Contract::where('premise_id', $premise->id)->whereIn('status', [\App\Models\Contract::STATUS_ACTIVO, \App\Models\Contract::STATUS_PENDIENTE])->exists() : false;
+                    @endphp
+
+                    @if(!$hasActiveContract)
+                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 mb-2.5">
+                        <label class="kt-form-label max-w-56" for="status">
+                            {{ __('Estado') }}
+                        </label>
+                        <div class="grow">
+                            @php
+                                $selectedStatus = old('status', $premise->status ?? 'available');
+                            @endphp
+                            <select class="kt-input" id="status" name="status">
+                                <option value="available" {{ $selectedStatus === 'available' ? 'selected' : '' }}>{{ __('Disponible') }}</option>
+                                <option value="maintenance" {{ $selectedStatus === 'maintenance' ? 'selected' : '' }}>{{ __('Mantenimiento') }}</option>
+                            </select>
+                            @error('status')
+                                <p class="text-sm text-destructive mt-1">{{ $message }}</p>
+                            @enderror
+                            <div class="text-xs text-secondary-foreground mt-1">El estado a «Arrendado» se asigna automáticamente al crear un contrato.</div>
+                        </div>
+                    </div>
+                    @else
+                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 mb-2.5">
+                        <label class="kt-form-label max-w-56">
+                            {{ __('Estado') }}
+                        </label>
+                        <div class="grow">
+                            <input class="kt-input bg-gray-100" type="text" value="{{ __('Arrendado / Con contrato activo') }}" disabled readonly>
+                            <div class="text-xs text-secondary-foreground mt-1">El estado está bloqueado porque hay contratos activos asociados a este local.</div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 
