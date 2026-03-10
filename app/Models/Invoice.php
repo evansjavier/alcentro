@@ -63,4 +63,47 @@ class Invoice extends Model
 
         $this->save();
     }
+
+    public function generateItemsFromContract(Contract $contract, string $period): float
+    {
+        $premiseCode = $contract->premise?->code ?? 'Local';
+        $totalAmount = 0;
+
+        // 1. Renta
+        if ($contract->rent_amount > 0) {
+            $this->items()->create([
+                'contract_id' => $contract->id,
+                'type' => InvoiceItem::TYPE_RENT,
+                'description' => "Renta {$premiseCode} - Periodo {$period}",
+                'amount' => $contract->rent_amount
+            ]);
+            $totalAmount += $contract->rent_amount;
+        }
+
+        // 2. Mantenimiento
+        if ($contract->maintenance_pct > 0) {
+            $maintenanceAmount = ($contract->rent_amount * $contract->maintenance_pct) / 100;
+            $this->items()->create([
+                'contract_id' => $contract->id,
+                'type' => InvoiceItem::TYPE_MAINTENANCE,
+                'description' => "Mantenimiento {$premiseCode} ({$contract->maintenance_pct}%)",
+                'amount' => $maintenanceAmount
+            ]);
+            $totalAmount += $maintenanceAmount;
+        }
+
+        // 3. Publicidad
+        if ($contract->advertising_pct > 0) {
+            $advertisingAmount = ($contract->rent_amount * $contract->advertising_pct) / 100;
+            $this->items()->create([
+                'contract_id' => $contract->id,
+                'type' => InvoiceItem::TYPE_ADVERTISING,
+                'description' => "Publicidad {$premiseCode} ({$contract->advertising_pct}%)",
+                'amount' => $advertisingAmount
+            ]);
+            $totalAmount += $advertisingAmount;
+        }
+
+        return $totalAmount;
+    }
 }

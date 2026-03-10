@@ -84,42 +84,7 @@ class GenerateMonthlyInvoices extends Command
                 $totalAmount = 0;
 
                 foreach ($contractsToBill as $contract) {
-                    $premiseCode = $contract->premise?->code ?? 'Local';
-
-                    // 1. Renta
-                    if ($contract->rent_amount > 0) {
-                        $invoice->items()->create([
-                            'contract_id' => $contract->id,
-                            'type' => 'rent',
-                            'description' => "Renta {$premiseCode} - Periodo {$currentPeriod}",
-                            'amount' => $contract->rent_amount
-                        ]);
-                        $totalAmount += $contract->rent_amount;
-                    }
-
-                    // 2. Mantenimiento
-                    if ($contract->maintenance_pct > 0) {
-                        $maintenanceAmount = ($contract->rent_amount * $contract->maintenance_pct) / 100;
-                        $invoice->items()->create([
-                            'contract_id' => $contract->id,
-                            'type' => 'maintenance',
-                            'description' => "Mantenimiento {$premiseCode} ({$contract->maintenance_pct}%)",
-                            'amount' => $maintenanceAmount
-                        ]);
-                        $totalAmount += $maintenanceAmount;
-                    }
-
-                    // 3. Publicidad
-                    if ($contract->advertising_pct > 0) {
-                        $advertisingAmount = ($contract->rent_amount * $contract->advertising_pct) / 100;
-                        $invoice->items()->create([
-                            'contract_id' => $contract->id,
-                            'type' => 'advertising',
-                            'description' => "Publicidad {$premiseCode} ({$contract->advertising_pct}%)",
-                            'amount' => $advertisingAmount
-                        ]);
-                        $totalAmount += $advertisingAmount;
-                    }
+                    $totalAmount += $invoice->generateItemsFromContract($contract, $currentPeriod);
                 }
 
                 $invoice->update(['total_amount' => $totalAmount]);

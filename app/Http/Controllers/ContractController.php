@@ -92,10 +92,33 @@ class ContractController extends Controller
                 abort(422, 'El local ya no está disponible.');
             }
 
-            Contract::create($data);
+            $contract = Contract::create($data);
 
             if (in_array($data['status'], [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE], true)) {
                 $premise->update(['status' => Premise::STATUS_RENTED]);
+            }
+
+            if ($contract->status === Contract::STATUS_ACTIVO) {
+                $today = \Carbon\Carbon::today();
+                $currentPeriod = $today->format('Y-m');
+                
+                $invoice = \App\Models\Invoice::firstOrCreate(
+                    [
+                        'client_id' => $contract->client_id,
+                        'period' => $currentPeriod,
+                    ],
+                    [
+                        'total_amount' => 0,
+                        'paid_amount' => 0,
+                        'due_date' => \Carbon\Carbon::create($today->year, $today->month, min($contract->payment_day, $today->daysInMonth))->format('Y-m-d'),
+                        'status' => \App\Models\Invoice::STATUS_PENDING,
+                    ]
+                );
+
+                $itemsTotal = $invoice->generateItemsFromContract($contract, $currentPeriod);
+
+                $invoice->total_amount += $itemsTotal;
+                $invoice->recalculateStatus();
             }
         });
 
