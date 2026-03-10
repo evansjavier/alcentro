@@ -2,30 +2,40 @@
 
 namespace App\Livewire\Payments;
 
-use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
-class Create extends Component
+class Edit extends Component
 {
+    public Payment $payment;
     public Invoice $invoice;
     public $amount_received;
     public $payment_date;
-    public $method = "wire_transfer";
+    public $method;
     public $reference_number;
     public $notes;
 
     public function getMaxAmountProperty()
     {
-        return round($this->invoice->total_amount - $this->invoice->paid_amount, 2);
+        $otherPaymentsSum = $this->invoice->payments()
+            ->where("id", "!=", $this->payment->id)
+            ->sum("amount_received");
+
+        return round($this->invoice->total_amount - $otherPaymentsSum, 2);
     }
 
-    public function mount(Invoice $invoice)
+    public function mount(Payment $payment)
     {
-        $this->invoice = $invoice;
-        $this->payment_date = date("Y-m-d");
-        $this->amount_received = max(0, $invoice->total_amount - $invoice->paid_amount);
+        $this->payment = $payment;
+        $this->invoice = $payment->invoice;
+
+        $this->amount_received = $payment->amount_received;
+        $this->payment_date = $payment->payment_date->format("Y-m-d");
+        $this->method = $payment->method;
+        $this->reference_number = $payment->reference_number;
+        $this->notes = $payment->notes;
     }
 
     public function save()
@@ -38,7 +48,8 @@ class Create extends Component
             "notes" => "nullable|string",
         ]);
 
-        $maxAmount = round($this->invoice->total_amount - $this->invoice->paid_amount, 2);
+        $otherPaymentsSum = $this->invoice->payments()->where("id", "!=", $this->payment->id)->sum("amount_received");
+        $maxAmount = round($this->invoice->total_amount - $otherPaymentsSum, 2);
 
         if (round((float) $this->amount_received, 2) > $maxAmount) {
             $this->addError("amount_received", "El monto no puede superar el saldo pendiente de $" . number_format($maxAmount, 2));
@@ -46,9 +57,8 @@ class Create extends Component
         }
 
         DB::transaction(function () {
-            // Create payment
-            $payment = Payment::create([
-                "invoice_id" => $this->invoice->id,
+            // Update payment
+            $this->payment->update([
                 "amount_received" => $this->amount_received,
                 "payment_date" => $this->payment_date,
                 "method" => $this->method,
@@ -61,7 +71,7 @@ class Create extends Component
             $this->invoice->recalculateStatus();
         });
 
-        session()->flash("status", "Pago registrado exitosamente.");
+        session()->flash("status", "Pago actualizado exitosamente.");
 
         return redirect()->route("invoices.show", $this->invoice);
     }

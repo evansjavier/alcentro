@@ -62,7 +62,10 @@
                                 </td>
                                 <td class="px-4 py-3 font-semibold text-green-600">${{ number_format((float) $payment->amount_received, 2, ".", ",") }}</td>
                                 <td class="px-4 py-3 text-right">
-                                    <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("invoices.show", $payment->invoice_id) }}">Ver factura</a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("payments.edit", $payment) }}">Editar</a>
+                                        <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("invoices.show", $payment->invoice_id) }}">Ver factura</a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

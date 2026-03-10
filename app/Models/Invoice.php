@@ -11,6 +11,10 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_PARTIAL = 'partial';
+    public const STATUS_PAID = 'paid';
+
     protected $fillable = [
         'client_id',
         'period',
@@ -42,5 +46,21 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function recalculateStatus(): void
+    {
+        $paidAmount = $this->payments()->sum('amount_received');
+        $this->paid_amount = $paidAmount;
+
+        if ($this->paid_amount >= $this->total_amount) {
+            $this->status = self::STATUS_PAID;
+        } elseif ($this->paid_amount > 0) {
+            $this->status = self::STATUS_PARTIAL;
+        } else {
+            $this->status = self::STATUS_PENDING;
+        }
+
+        $this->save();
     }
 }

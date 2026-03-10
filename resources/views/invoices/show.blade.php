@@ -19,7 +19,7 @@
                 <i class="ki-filled ki-arrow-left"></i>
                 Volver
             </a>
-            
+
             <div class="flex gap-2">
                 @if($invoice->status !== 'paid')
                 <a href="{{ route('invoices.payments.create', $invoice) }}" class="kt-btn kt-btn-primary">
@@ -38,13 +38,13 @@
                         $statusLabel = [
                             'pending' => 'Pendiente',
                             'partial' => 'Abono Parcial',
-                            'paid' => 'Pagada',       
+                            'paid' => 'Pagada',
                         ][$invoice->status] ?? $invoice->status;
-                        $statusColor = match ($invoice->status) {                                                                                                                          
-                            'pending' => 'bg-amber-500/10 text-amber-700 border-amber-200',                                                                                                  
-                            'partial' => 'bg-blue-500/10 text-blue-700 border-blue-200',                                                                                         
-                            'paid' => 'bg-green-500/10 text-green-700 border-green-200',                                                                                                                                                                                                                               
-                            default => 'bg-muted text-foreground border-input',                                                                                                         
+                        $statusColor = match ($invoice->status) {
+                            'pending' => 'bg-amber-500/10 text-amber-700 border-amber-200',
+                            'partial' => 'bg-blue-500/10 text-blue-700 border-blue-200',
+                            'paid' => 'bg-green-500/10 text-green-700 border-green-200',
+                            default => 'bg-muted text-foreground border-input',
                         };
                     @endphp
                     <span class="kt-badge kt-badge-outline {{ $statusColor }} border px-2.5 py-1 text-xs font-medium rounded-full ml-3">{{ $statusLabel }}</span>
@@ -121,6 +121,7 @@
                             <th class="px-5 py-3 font-medium">Fecha</th>
                             <th class="px-5 py-3 font-medium">Concepto</th>
                             <th class="px-5 py-3 font-medium text-right">Monto</th>
+                            <th class="px-5 py-3 font-medium text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-input">
@@ -134,10 +135,13 @@
                                     @endif
                                 </td>
                                 <td class="px-5 py-3 text-right font-medium">${{ number_format((float) $payment->amount_received, 2, '.', ',') }}</td>
+                                <td class="px-5 py-3 text-right">
+                                    <a href="{{ route('payments.edit', $payment) }}" class="kt-btn kt-btn-light kt-btn-sm" title="Editar Pago">Editar</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-5 py-6 text-center text-muted-foreground">
+                                <td colspan="4" class="px-5 py-6 text-center text-muted-foreground">
                                     Aún no hay abonos ni pagos registrados.
                                 </td>
                             </tr>
