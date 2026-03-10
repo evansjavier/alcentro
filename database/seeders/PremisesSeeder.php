@@ -20,7 +20,7 @@ class PremisesSeeder extends Seeder
                 'code' => 'LOC-102',
                 'square_meters' => 62.0,
                 'suggested_rent' => 3600000,
-                'status' => Premise::STATUS_RENTED,
+                'status' => Premise::STATUS_AVAILABLE,
             ],
             [
                 'code' => 'LOC-201',
@@ -32,13 +32,13 @@ class PremisesSeeder extends Seeder
                 'code' => 'LOC-202',
                 'square_meters' => 48.3,
                 'suggested_rent' => 2800000,
-                'status' => Premise::STATUS_MAINTENANCE,
+                'status' => Premise::STATUS_AVAILABLE,
             ],
             [
                 'code' => 'LOC-301',
                 'square_meters' => 110.0,
                 'suggested_rent' => 6700000,
-                'status' => Premise::STATUS_RENTED,
+                'status' => Premise::STATUS_AVAILABLE,
             ],
             [
                 'code' => 'LOC-302',
