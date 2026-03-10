@@ -68,25 +68,6 @@
                             @enderror
                         </div>
                     </div>
-
-                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 mb-2.5">
-                        <label class="kt-form-label max-w-56" for="status">
-                            {{ __('Estado') }}
-                        </label>
-                        <div class="grow">
-                            @php
-                                $selectedStatus = old('status', $premise->status ?? 'available');
-                            @endphp
-                            <select class="kt-input" id="status" name="status">
-                                <option value="available" {{ $selectedStatus === 'available' ? 'selected' : '' }}>{{ __('Disponible') }}</option>
-                                <option value="rented" {{ $selectedStatus === 'rented' ? 'selected' : '' }}>{{ __('Arrendado') }}</option>
-                                <option value="maintenance" {{ $selectedStatus === 'maintenance' ? 'selected' : '' }}>{{ __('Mantenimiento') }}</option>
-                            </select>
-                            @error('status')
-                                <p class="text-sm text-destructive mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
             </div>
 

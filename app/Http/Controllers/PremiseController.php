@@ -26,8 +26,9 @@ class PremiseController extends Controller
             'code' => ['required', 'string', 'max:255', 'unique:premises,code'],
             'square_meters' => ['required', 'numeric', 'min:0'],
             'suggested_rent' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', Rule::in(Premise::STATUSES)],
         ]);
+
+        $data['status'] = Premise::STATUS_AVAILABLE;
 
         Premise::create($data);
 
@@ -39,10 +40,14 @@ class PremiseController extends Controller
     public function update(Request $request, Premise $premise): RedirectResponse
     {
         $data = $request->validate([
-            'code' => ['required', 'string', 'max:255', Rule::unique('premises', 'code')->ignore($premise->id)],
+            'code' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('premises', 'code')->ignore($premise->id)
+            ],
             'square_meters' => ['required', 'numeric', 'min:0'],
             'suggested_rent' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', Rule::in(Premise::STATUSES)],
         ]);
 
         $premise->update($data);
