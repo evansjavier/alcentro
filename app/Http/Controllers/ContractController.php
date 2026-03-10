@@ -100,7 +100,7 @@ class ContractController extends Controller
         });
 
         return redirect()
-            ->route('premises.index')
+            ->route('contracts.index')
             ->with('status', 'Contrato creado y local asignado correctamente.');
     }
 
