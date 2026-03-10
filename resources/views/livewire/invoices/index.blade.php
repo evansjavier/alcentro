@@ -40,6 +40,7 @@
                         <tr class="text-secondary-foreground">
                             <th class="px-4 py-3 font-medium">Periodo</th>
                             <th class="px-4 py-3 font-medium">Cliente / Empresa</th>
+                            <th class="px-4 py-3 font-medium">Local</th>
                             <th class="px-4 py-3 font-medium">Monto Total</th>
                             <th class="px-4 py-3 font-medium">Vencimiento</th>
                             <th class="px-4 py-3 font-medium">Estado</th>
@@ -54,6 +55,13 @@
                                     <div class="flex flex-col">
                                         <span class="font-medium">{{ $invoice->client?->name ?? '—' }}</span>
                                     </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if($invoice->contract?->premise)
+                                        <span class="font-medium">Local {{ $invoice->contract->premise->code }}</span>
+                                    @else
+                                        <span class="text-secondary-foreground">—</span>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 font-medium">${{ number_format((float) $invoice->total_amount, 2, '.', ',') }}</td>
                                 <td class="px-4 py-3">{{ $invoice->due_date?->format('Y-m-d') }}</td>

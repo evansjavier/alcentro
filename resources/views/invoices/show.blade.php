@@ -51,11 +51,20 @@
                 </h3>
             </div>
             <div class="kt-card-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-input">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-input">
                     <div>
                         <span class="text-sm text-secondary-foreground block mb-1">Empresa / Inquilino</span>
                         <div class="font-semibold">{{ $invoice->client?->name ?? '—' }}</div>
                         <div class="text-sm text-muted-foreground">{{ $invoice->client?->tax_id }}</div>
+                    </div>
+                    <div>
+                        <span class="text-sm text-secondary-foreground block mb-1">Local</span>
+                        @if($invoice->contract?->premise)
+                            <div class="font-semibold">{{ $invoice->contract->premise->code }}</div>
+                            <div class="text-sm text-muted-foreground">Contrato #{{ $invoice->contract->id }}</div>
+                        @else
+                            <div class="font-semibold">—</div>
+                        @endif
                     </div>
                     <div>
                         <span class="text-sm text-secondary-foreground block mb-1">Periodo</span>

@@ -32,64 +32,44 @@ class GenerateMonthlyInvoices extends Command
         $invoicesCreated = 0;
 
         foreach ($clients as $client) {
-            // Evaluamos todos los contratos activos del cliente que ya cumplen su fecha de corte
-            $contractsToBill = [];
-            
-            // Para simplificar, el due_date del cliente podría ser el menor dia de pago de sus contratos
-            // o se podría generar 1 factura por cada fecha de corte (si el cliente tiene contratos en distintas fechas).
-            // Lo ideal es generar la factura del cliente cuando llega su contrato más temprano del mes.
-            $earliestPaymentDay = 31;
-
             foreach ($client->contracts as $contract) {
                 $daysInMonth = $today->daysInMonth;
                 $paymentDay = min($contract->payment_day, $daysInMonth);
                 
                 // Si hoy es el dia de pago o después, el contrato entra en facturación
                 if ($today->day >= $paymentDay) {
-                    $contractsToBill[] = $contract;
-                    if ($paymentDay < $earliestPaymentDay) {
-                        $earliestPaymentDay = $paymentDay;
+                    
+                    // Validar que el contrato no tenga ya una factura para este periodo
+                    $existingInvoice = Invoice::where('contract_id', $contract->id)
+                        ->where('period', $currentPeriod)
+                        ->first();
+
+                    if ($existingInvoice) {
+                        continue; 
                     }
+
+                    // Calculamos due date basado en el payment day del contrato
+                    $dueDate = Carbon::create($today->year, $today->month, $paymentDay)->format('Y-m-d');
+                    
+                    DB::transaction(function () use ($client, $contract, $currentPeriod, $dueDate, &$invoicesCreated) {
+                        
+                        $invoice = Invoice::create([
+                            'client_id' => $client->id,
+                            'contract_id' => $contract->id,
+                            'period' => $currentPeriod,
+                            'total_amount' => 0, 
+                            'paid_amount' => 0,
+                            'due_date' => $dueDate,
+                            'status' => Invoice::STATUS_PENDING, 
+                        ]);
+
+                        $totalAmount = $invoice->generateItemsFromContract($contract, $currentPeriod);
+
+                        $invoice->update(['total_amount' => $totalAmount]);
+                        $invoicesCreated++;
+                    });
                 }
             }
-
-            if (empty($contractsToBill)) {
-                continue; // Ningún contrato pendiente de facturar hoy para este cliente
-            }
-
-            // Validar que el cliente no tenga ya una factura para este periodo (si es una al mes)
-            $existingInvoice = Invoice::where('client_id', $client->id)
-                ->where('period', $currentPeriod)
-                ->first();
-
-            if ($existingInvoice) {
-                // Si la factura mensual del cliente ya existe, no creamos otra.
-                continue; 
-            }
-
-            // Calculamos due date basado en el earliest payment day de los contratos
-            $dueDate = Carbon::create($today->year, $today->month, $earliestPaymentDay)->format('Y-m-d');
-            
-            DB::transaction(function () use ($client, $contractsToBill, $currentPeriod, $dueDate, &$invoicesCreated) {
-                
-                $invoice = Invoice::create([
-                    'client_id' => $client->id,
-                    'period' => $currentPeriod,
-                    'total_amount' => 0, // Se calculará sumando los items
-                    'paid_amount' => 0,
-                    'due_date' => $dueDate,
-                    'status' => 'pending', 
-                ]);
-
-                $totalAmount = 0;
-
-                foreach ($contractsToBill as $contract) {
-                    $totalAmount += $invoice->generateItemsFromContract($contract, $currentPeriod);
-                }
-
-                $invoice->update(['total_amount' => $totalAmount]);
-                $invoicesCreated++;
-            });
         }
 
         $this->info("Proceso finalizado. Facturas creadas: {$invoicesCreated}");

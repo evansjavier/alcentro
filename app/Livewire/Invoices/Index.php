@@ -41,7 +41,7 @@ class Index extends Component
 
     public function render()
     {
-        $invoices = Invoice::with(['client:id,name,tax_id'])
+        $invoices = Invoice::with(['client:id,name,tax_id', 'contract.premise'])
             ->when($this->status !== 'all', function ($query) {
                 $query->where('status', $this->status);
             })

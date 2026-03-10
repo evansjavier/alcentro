@@ -105,6 +105,7 @@ class ContractController extends Controller
                 $invoice = \App\Models\Invoice::firstOrCreate(
                     [
                         'client_id' => $contract->client_id,
+                        'contract_id' => $contract->id,
                         'period' => $currentPeriod,
                     ],
                     [
