@@ -30,7 +30,7 @@ class SyncContractsStatus extends Command
     public function handle()
     {
         $today = Carbon::today()->format('Y-m-d');
-        
+
         $this->info("Iniciando sincronización de contratos para la fecha: {$today}");
 
         DB::transaction(function () use ($today) {
@@ -38,7 +38,7 @@ class SyncContractsStatus extends Command
             $activatedCount = Contract::where('status', Contract::STATUS_PENDIENTE)
                 ->whereDate('start_date', '<=', $today)
                 ->update(['status' => Contract::STATUS_ACTIVO]);
-                
+
             $this->info("Contratos activados (de pendiente a activo): {$activatedCount}");
 
             // 2. Finalizar contratos que ya pasaron su fecha de fin y están activos
@@ -73,8 +73,31 @@ class SyncContractsStatus extends Command
             }
 
             $this->info("Contratos finalizados (de activo a finalizado): {$finishedCount}");
+
+            // 3. Saneamiento (Auto-healing): Corregir locales desincronizados
+            // A) Locales que tienen contrato activo/pendiente pero NO están como arrendados
+            $healedToRented = Premise::where('status', '!=', Premise::STATUS_RENTED)
+                ->whereHas('contracts', function ($query) {
+                    $query->whereIn('status', [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE]);
+                })
+                ->update(['status' => Premise::STATUS_RENTED]);
+
+            if ($healedToRented > 0) {
+                $this->info("Locales corregidos a 'arrendado' (tenían contratos activos pero estado incorrecto): {$healedToRented}");
+            }
+
+            // B) Locales que están arrendados pero YA NO tienen contratos activos ni pendientes
+            $healedToAvailable = Premise::where('status', Premise::STATUS_RENTED)
+                ->whereDoesntHave('contracts', function ($query) {
+                    $query->whereIn('status', [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE]);
+                })
+                ->update(['status' => Premise::STATUS_AVAILABLE]);
+
+            if ($healedToAvailable > 0) {
+                $this->info("Locales corregidos a 'disponible' (aparecían arrendados sin contratos activos): {$healedToAvailable}");
+            }
         });
-        
+
         $this->info("Sincronización completada exitosamente.");
     }
 }
