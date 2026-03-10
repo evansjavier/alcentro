@@ -11,8 +11,16 @@
             <h3 class="text-base text-mono font-medium">Mostrando {{ $clients->total() }} empresas</h3>
             <span class="text-sm text-secondary-foreground">{{ $clients->firstItem() ?? 0 }}-{{ $clients->lastItem() ?? 0 }} de {{ $clients->total() }}</span>
         </div>
-        <div class="flex items-center flex-wrap gap-2.5">
-            <select wire:model.live="status" class="kt-input w-40">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('clients.create') }}" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-plus"></i>
+                Nueva Empresa
+            </a>
+        </div>
+    </div>
+
+    <div class="flex items-center flex-wrap gap-2.5 mb-5">
+        <select wire:model.live="status" class="kt-input w-40">
                 <option value="all">Todos</option>
                 <option value="with_email">Con correo</option>
                 <option value="without_email">Sin correo</option>
@@ -29,7 +37,6 @@
                 </label>
             </div>
         </div>
-    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-7.5">
         @forelse ($clients as $client)
@@ -46,6 +53,10 @@
                 <div class="text-secondary-foreground text-sm hover:text-primary text-center">{{ $client->email ?: 'Sin correo' }}</div>
                 <div class="text-sm text-muted-foreground mt-1 text-center">NIT/RUT: {{ $client->tax_id ?: 'No registrado' }}</div>
                 <div class="text-sm text-muted-foreground text-center">Tel: {{ $client->phone ?: 'No registrado' }}</div>
+                
+                <div class="mt-4 pt-4 border-t border-input w-full flex justify-center">
+                    <a href="{{ route('clients.edit', $client) }}" class="kt-btn kt-btn-light kt-btn-sm w-full">Editar</a>
+                </div>
             </div>
         @empty
             <div class="sm:col-span-2 xl:col-span-4">

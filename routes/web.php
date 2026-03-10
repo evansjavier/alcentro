@@ -28,11 +28,16 @@ Route::get('/clients', ClientsIndex::class)
     ->middleware(['auth', 'verified'])
     ->name('clients.index');
 
-Route::get('/premises', PremisesIndex::class)
-    ->middleware(['auth', 'verified'])
-    ->name('premises.index');
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/clients/create', \App\Livewire\Clients\Create::class)
+        ->name('clients.create');
+        
+    Route::get('/clients/{client}/edit', \App\Livewire\Clients\Edit::class)
+        ->name('clients.edit');
+
+    Route::get('/premises', PremisesIndex::class)
+        ->name('premises.index');
+        
     Route::get('/premises/create', [PremiseController::class, 'create'])
         ->name('premises.create');
 
