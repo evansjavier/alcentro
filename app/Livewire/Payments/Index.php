@@ -36,28 +36,6 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function toggleApproval(Payment $payment)
-    {
-        if ($payment->is_approved) {
-            $payment->update([
-                'is_approved' => false,
-                'approved_at' => null,
-            ]);
-        } else {
-            $otherPaymentsSum = $payment->invoice->approvedPayments()->where('id', '!=', $payment->id)->sum('amount_received');
-            $maxAmount = round($payment->invoice->total_amount - $otherPaymentsSum, 2);
-
-            if (round((float) $payment->amount_received, 2) > $maxAmount) {
-                session()->flash('error', 'El monto supera el saldo pendiente de la factura. No se puede aprobar desde aquí.');
-                return;
-            }
-
-            $payment->invoice->recalculateStatus();
-        }
-
-        session()->flash('success', 'Estado de aprobación actualizado.');
-    }
-
     public function render()
     {
         $payments = Payment::with(["invoice.client:id,name,tax_id"])

@@ -82,13 +82,11 @@
                                 </td>
                                 <td class="px-4 py-3 font-semibold text-green-600">${{ number_format((float) $payment->amount_received, 2, ".", ",") }}</td>
                                 <td class="px-4 py-3">
-                                    <button
-                                        wire:click="toggleApproval({{ $payment->id }})"
-                                        class="kt-badge kt-badge-outline px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer {{ $payment->is_approved ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200' }}"
-                                        title="Clic para cambiar estado"
+                                    <span
+                                        class="kt-badge kt-badge-outline px-2.5 py-1 text-xs font-medium rounded-full {{ $payment->is_approved ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200' }}"
                                     >
                                         {{ $payment->is_approved ? 'Aprobado' : 'Pendiente' }}
-                                    </button>
+                                    </span>
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-2">
