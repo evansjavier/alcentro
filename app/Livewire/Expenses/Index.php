@@ -42,25 +42,28 @@ class Index extends Component
 
     public function render()
     {
-        $expenses = Expense::query()
+        $query = Expense::query()
             ->with(['concept', 'user'])
-            ->when($this->search, function ($query) {
+            ->when($this->search, function ($q) {
                 $term = '%' . $this->search . '%';
-                $query->where(function ($q) use ($term) {
-                    $q->where('reference_number', 'like', $term)
+                $q->where(function ($sub) use ($term) {
+                    $sub->where('reference_number', 'like', $term)
                       ->orWhere('notes', 'like', $term);
                 });
             })
-            ->when($this->concept_id, function ($query) {
-                $query->where('expense_concept_id', $this->concept_id);
+            ->when($this->concept_id, function ($q) {
+                $q->where('expense_concept_id', $this->concept_id);
             })
-            ->when($this->date_from, function ($query) {
-                $query->whereDate('expense_date', '>=', $this->date_from);
+            ->when($this->date_from, function ($q) {
+                $q->whereDate('expense_date', '>=', $this->date_from);
             })
-            ->when($this->date_to, function ($query) {
-                $query->whereDate('expense_date', '<=', $this->date_to);
-            })
-            ->orderByDesc('expense_date')
+            ->when($this->date_to, function ($q) {
+                $q->whereDate('expense_date', '<=', $this->date_to);
+            });
+
+        $totalSum = (clone $query)->sum('amount');
+
+        $expenses = $query->orderByDesc('expense_date')
             ->orderByDesc('id')
             ->paginate($this->perPage);
 
@@ -68,6 +71,7 @@ class Index extends Component
 
         return view('livewire.expenses.index', [
             'expenses' => $expenses,
+            'totalSum' => $totalSum,
             'concepts' => $concepts,
         ]);
     }
