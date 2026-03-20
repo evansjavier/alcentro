@@ -2,12 +2,7 @@
     @section("title", isset($payment) ? __("Editar Pago") : __("Registrar Pago"))
 
     <form wire:submit="save" class="grid gap-5 lg:gap-7.5 xl:w-[48rem] mx-auto">
-        <div class="flex items-center justify-between gap-2">
-            <a class="kt-btn kt-btn-light" href="{{ route("invoices.show", $invoice) }}">
-                <i class="ki-filled ki-arrow-left"></i>
-                Volver
-            </a>
-
+        <div class="flex items-center justify-end gap-2">
             @if(!(isset($payment) && $payment->is_approved))
             <button type="submit" class="kt-btn kt-btn-primary">
                 <i class="ki-filled ki-check"></i>

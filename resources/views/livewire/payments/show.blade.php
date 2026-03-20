@@ -2,24 +2,17 @@
     @section("title", __("Detalles del Pago"))
 
     <div class="grid gap-5 lg:gap-7.5 xl:w-[48rem] mx-auto">
-        <div class="flex items-center justify-between gap-2">
-            <a class="kt-btn kt-btn-light" href="{{ route('invoices.show', $payment->invoice) }}">
-                <i class="ki-filled ki-arrow-left"></i>
-                Volver a la Factura
-            </a>
-
-            <div class="flex items-center gap-2">
-                @if(!$payment->is_approved)
-                    <a href="{{ route('payments.edit', $payment) }}" class="kt-btn kt-btn-light">
-                        <i class="ki-filled ki-pencil"></i>
-                        Editar
-                    </a>
-                    <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success">
-                        <i class="ki-filled ki-check-circle"></i>
-                        Aprobar Pago
-                    </button>
-                @endif
-            </div>
+        <div class="flex items-center justify-end gap-2">
+            @if(!$payment->is_approved)
+                <a href="{{ route('payments.edit', $payment) }}" class="kt-btn kt-btn-light">
+                    <i class="ki-filled ki-pencil"></i>
+                    Editar
+                </a>
+                <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success">
+                    <i class="ki-filled ki-check-circle"></i>
+                    Aprobar Pago
+                </button>
+            @endif
         </div>
 
         @if(session('error'))
