@@ -11,7 +11,26 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="mb-4 rounded-md bg-green-50 p-4 border border-green-200">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="ki-filled ki-check-circle text-green-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex items-center flex-wrap gap-2.5 mb-4">
+        <select wire:model.live="status" class="kt-input w-44">
+            <option value="all">Todos los estados</option>
+            <option value="approved">Aprobados</option>
+            <option value="pending">Pendientes</option>
+        </select>
+
         <select wire:model.live="method" class="kt-input w-44">
             <option value="all">Cualquier método</option>
             <option value="cash">Efectivo</option>
@@ -37,6 +56,7 @@
                             <th class="px-4 py-3 font-medium">Cliente</th>
                             <th class="px-4 py-3 font-medium">Método / Ref</th>
                             <th class="px-4 py-3 font-medium">Monto</th>
+                            <th class="px-4 py-3 font-medium">Estado</th>
                             <th class="px-4 py-3 font-medium text-right">Acciones</th>
                         </tr>
                     </thead>
@@ -61,9 +81,22 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 font-semibold text-green-600">${{ number_format((float) $payment->amount_received, 2, ".", ",") }}</td>
+                                <td class="px-4 py-3">
+                                    <button
+                                        wire:click="toggleApproval({{ $payment->id }})"
+                                        class="kt-badge kt-badge-outline px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer {{ $payment->is_approved ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200' }}"
+                                        title="Clic para cambiar estado"
+                                    >
+                                        {{ $payment->is_approved ? 'Aprobado' : 'Pendiente' }}
+                                    </button>
+                                </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("payments.edit", $payment) }}">Editar</a>
+                                        @if(!$payment->is_approved)
+                                            <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("payments.edit", $payment) }}">Editar</a>
+                                        @else
+                                            <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("payments.show", $payment) }}">Ver</a>
+                                        @endif
                                         <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route("invoices.show", $payment->invoice_id) }}">Ver factura</a>
                                     </div>
                                 </td>

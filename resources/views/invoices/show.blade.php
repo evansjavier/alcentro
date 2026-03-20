@@ -106,7 +106,7 @@
                         <span class="font-semibold text-lg">${{ number_format((float) $invoice->total_amount, 2, '.', ',') }}</span>
                     </div>
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-secondary-foreground">Monto Pagado / Abonado</span>
+                        <span class="text-secondary-foreground">Monto Pagado / Abonado <span class="text-xs text-muted-foreground">(Aprobados)</span></span>
                         <span class="font-medium text-green-600">${{ number_format((float) $invoice->paid_amount, 2, '.', ',') }}</span>
                     </div>
                     <div class="flex justify-between items-center pt-3 border-t border-input">
@@ -128,14 +128,15 @@
                     <thead class="bg-muted/60">
                         <tr class="text-secondary-foreground text-left">
                             <th class="px-5 py-3 font-medium">Fecha</th>
-                            <th class="px-5 py-3 font-medium">Concepto</th>
+                            <th class="px-5 py-3 font-medium">Concepto / Ref</th>
+                            <th class="px-5 py-3 font-medium">Estado</th>
                             <th class="px-5 py-3 font-medium text-right">Monto</th>
                             <th class="px-5 py-3 font-medium text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-input">
-                        @forelse($invoice->payments as $payment)
-                            <tr>
+                        @forelse($invoice->payments()->orderBy('created_at', 'desc')->get() as $payment)
+                            <tr class="{{ !$payment->is_approved ? 'bg-yellow-50/30' : '' }}">
                                 <td class="px-5 py-3">{{ $payment->payment_date->format('d/m/Y') }}</td>
                                 <td class="px-5 py-3">
                                     {{ $payment->method === 'cash' ? 'Efectivo' : 'Transferencia/Depósito' }}
@@ -146,14 +147,19 @@
                                         <div class="text-xs text-muted-foreground mt-0.5 italic">{{ $payment->notes }}</div>
                                     @endif
                                 </td>
-                                <td class="px-5 py-3 text-right font-medium">${{ number_format((float) $payment->amount_received, 2, '.', ',') }}</td>
+                                <td class="px-5 py-3">
+                                    <span class="kt-badge kt-badge-outline px-2 py-1 text-xs font-medium rounded-full {{ $payment->is_approved ? 'bg-green-500/10 text-green-700 border-green-200' : 'bg-yellow-500/10 text-yellow-700 border-yellow-200' }}">
+                                        {{ $payment->is_approved ? 'Aprobado' : 'Pendiente' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-right font-medium {{ $payment->is_approved ? 'text-green-600' : 'text-secondary-foreground line-through opacity-70' }}">${{ number_format((float) $payment->amount_received, 2, '.', ',') }}</td>
                                 <td class="px-5 py-3 text-right">
-                                    <a href="{{ route('payments.edit', $payment) }}" class="kt-btn kt-btn-light kt-btn-sm" title="Editar Pago">Editar</a>
+                                    <a href="{{ route('payments.show', $payment) }}" class="kt-btn kt-btn-light kt-btn-sm" title="Ver Detalles del Pago">Ver</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-5 py-6 text-center text-muted-foreground">
+                                <td colspan="5" class="px-5 py-6 text-center text-muted-foreground">
                                     Aún no hay abonos ni pagos registrados.
                                 </td>
                             </tr>

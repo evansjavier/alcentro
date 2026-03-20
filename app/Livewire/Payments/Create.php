@@ -40,11 +40,6 @@ class Create extends Component
 
         $maxAmount = round($this->invoice->total_amount - $this->invoice->paid_amount, 2);
 
-        if (round((float) $this->amount_received, 2) > $maxAmount) {
-            $this->addError("amount_received", "El monto no puede superar el saldo pendiente de $" . number_format($maxAmount, 2));
-            return;
-        }
-
         DB::transaction(function () {
             // Create payment
             $payment = Payment::create([
@@ -55,6 +50,8 @@ class Create extends Component
                 "is_taxable" => $this->method === "wire_transfer",
                 "reference_number" => $this->reference_number,
                 "notes" => $this->notes,
+                "is_approved" => false,
+                "approved_at" => null,
             ]);
 
             // Update invoice

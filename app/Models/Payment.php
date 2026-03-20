@@ -18,6 +18,8 @@ class Payment extends Model
         'is_taxable',
         'reference_number',
         'notes',
+        'is_approved',
+        'approved_at',
     ];
 
     protected function casts(): array
@@ -26,7 +28,14 @@ class Payment extends Model
             'amount_received' => 'decimal:2',
             'payment_date' => 'date',
             'is_taxable' => 'boolean',
+            'is_approved' => 'boolean',
+            'approved_at' => 'datetime',
         ];
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('is_approved', true);
     }
 
     public function invoice(): BelongsTo

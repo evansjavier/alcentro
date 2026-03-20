@@ -16,10 +16,11 @@ class Edit extends Component
     public $method;
     public $reference_number;
     public $notes;
+    public $is_approved = false;
 
     public function getMaxAmountProperty()
     {
-        $otherPaymentsSum = $this->invoice->payments()
+        $otherPaymentsSum = $this->invoice->approvedPayments()
             ->where("id", "!=", $this->payment->id)
             ->sum("amount_received");
 
@@ -36,10 +37,16 @@ class Edit extends Component
         $this->method = $payment->method;
         $this->reference_number = $payment->reference_number;
         $this->notes = $payment->notes;
+        $this->is_approved = $payment->is_approved;
     }
 
     public function save()
     {
+        if ($this->payment->is_approved) {
+            $this->addError("amount_received", "No se puede editar un pago aprobado");
+            return;
+        }
+
         $this->validate([
             "amount_received" => "required|numeric|min:0.01",
             "payment_date" => "required|date",
@@ -47,14 +54,6 @@ class Edit extends Component
             "reference_number" => "nullable|string|max:255",
             "notes" => "nullable|string",
         ]);
-
-        $otherPaymentsSum = $this->invoice->payments()->where("id", "!=", $this->payment->id)->sum("amount_received");
-        $maxAmount = round($this->invoice->total_amount - $otherPaymentsSum, 2);
-
-        if (round((float) $this->amount_received, 2) > $maxAmount) {
-            $this->addError("amount_received", "El monto no puede superar el saldo pendiente de $" . number_format($maxAmount, 2));
-            return;
-        }
 
         DB::transaction(function () {
             // Update payment

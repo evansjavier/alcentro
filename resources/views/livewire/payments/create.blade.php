@@ -8,10 +8,12 @@
                 Volver
             </a>
 
+            @if(!(isset($payment) && $payment->is_approved))
             <button type="submit" class="kt-btn kt-btn-primary">
                 <i class="ki-filled ki-check"></i>
                 Guardar Pago
             </button>
+            @endif
         </div>
 
         <div class="kt-card">
@@ -38,13 +40,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium">Monto a pagar ($)</label>
-                        <input type="number" step="0.01" max="{{ $this->max_amount }}" wire:model="amount_received" class="kt-input" required />
+                        <input type="number" step="0.01" max="{{ $this->max_amount }}" wire:model="amount_received" class="kt-input" required {{ isset($payment) && $payment->is_approved ? 'disabled' : '' }} />
                         @error("amount_received") <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium">Fecha de pago</label>
-                        <input type="date" wire:model="payment_date" class="kt-input" required />
+                        <input type="date" wire:model="payment_date" class="kt-input" required {{ isset($payment) && $payment->is_approved ? 'disabled' : '' }} />
                         @error("payment_date") <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -52,7 +54,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium">Método de pago</label>
-                        <select wire:model="method" class="kt-input" required>
+                        <select wire:model="method" class="kt-input" required {{ isset($payment) && $payment->is_approved ? 'disabled' : '' }}>
                             <option value="wire_transfer">Transferencia / Depósito</option>
                             <option value="cash">Efectivo</option>
                         </select>
@@ -61,14 +63,14 @@
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium">Número de Referencia (opcional)</label>
-                        <input type="text" wire:model="reference_number" class="kt-input" placeholder="Ej. 123456789" />
+                        <input type="text" wire:model="reference_number" class="kt-input" placeholder="Ej. 123456789" {{ isset($payment) && $payment->is_approved ? 'disabled' : '' }} />
                         @error("reference_number") <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-medium">Notas u Observaciones (opcional)</label>
-                    <textarea wire:model="notes" class="kt-input" rows="3" placeholder="Detalles adicionales del pago..."></textarea>
+                    <textarea wire:model="notes" class="kt-input" rows="3" placeholder="Detalles adicionales del pago..." {{ isset($payment) && $payment->is_approved ? 'disabled' : '' }}></textarea>
                     @error("notes") <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
             </div>

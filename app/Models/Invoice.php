@@ -54,9 +54,14 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function approvedPayments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->approved();
+    }
+
     public function recalculateStatus(): void
     {
-        $paidAmount = $this->payments()->sum('amount_received');
+        $paidAmount = $this->approvedPayments()->sum('amount_received');
         $this->paid_amount = $paidAmount;
 
         if ($this->paid_amount >= $this->total_amount) {

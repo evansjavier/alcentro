@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Payments
     Route::get('/invoices/{invoice}/payments/create', \App\Livewire\Payments\Create::class)->name('invoices.payments.create');
+    Route::get('/payments/{payment}', \App\Livewire\Payments\Show::class)->name('payments.show');
     Route::get('/payments/{payment}/edit', \App\Livewire\Payments\Edit::class)->name('payments.edit');
     Route::get('/payments', \App\Livewire\Payments\Index::class)->name('payments.index');
 
