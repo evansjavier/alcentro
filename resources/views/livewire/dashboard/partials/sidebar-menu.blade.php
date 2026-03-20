@@ -71,7 +71,7 @@
                     <span class="kt-menu-icon items-start text-lg text-secondary-foreground">
                         <i class="ki-filled ki-handcart"></i>
                     </span>
-                    <span class="kt-menu-title text-sm text-foreground font-medium">Egresos</span>
+                    <span class="kt-menu-title text-sm text-foreground font-medium">Gastos</span>
                 </a>
             </div>
 

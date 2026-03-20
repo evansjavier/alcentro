@@ -1,5 +1,5 @@
 <div>
-    @section('title', __('Egresos'))
+    @section('title', __('Gastos'))
 
     @if(session('success'))
         <div class="mb-4 rounded-md bg-green-50 p-4 border border-green-200">
@@ -110,6 +110,19 @@
                             </tr>
                         @endforelse
                     </tbody>
+                    @if($expenses->count() > 0)
+                        <tfoot class="bg-muted/40 border-t border-input">
+                            <tr>
+                                <td colspan="4" class="px-4 py-4 text-right font-medium text-secondary-foreground uppercase tracking-wider text-xs">
+                                    Total Gastos:
+                                </td>
+                                <td class="px-4 py-4 font-semibold text-base text-foreground">
+                                    ${{ number_format((float) $totalSum, 2, '.', ',') }}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
