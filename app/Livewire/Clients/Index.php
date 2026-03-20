@@ -69,10 +69,64 @@ class Index extends Component
             ->when($this->sort === 'latest', function ($query) {
                 $query->orderByDesc('created_at');
             })
+            ->with(['contacts' => function ($query) {
+                $query->whereIn('role', ['Dueño', 'Encargado']);
+            }])
             ->paginate($this->perPage);
 
         return view('livewire.clients.index', [
             'clients' => $clients,
         ]);
+    }
+
+    public function mount()
+    {
+    }
+
+    public function getContacts(Client $client)
+    {
+        return $client->contacts()->get()->toArray();
+    }
+
+    public function saveContacts(Client $client, array $contacts)
+    {
+        $ownersCount = 0;
+
+        foreach ($contacts as $contact) {
+            if ($contact['role'] === 'Dueño') {
+                $ownersCount++;
+            }
+
+            // Validar teléfono (ej: México 10 dígitos)
+            if (empty($contact['phone']) || !preg_match('/^[0-9]{10}$/', $contact['phone'])) {
+                $this->addError("contacts.{$contact['id']}", "El teléfono del contacto {$contact['name']} debe tener exactamente 10 dígitos numéricos.");
+                return;
+            }
+
+            if (empty($contact['name'])) {
+                $this->addError("contacts.{$contact['id']}", 'El nombre del contacto es obligatorio.');
+                return;
+            }
+        }
+
+        if ($ownersCount > 1) {
+            $this->addError('contacts', 'Solo puede haber un (1) contacto con el rol de Dueño.');
+            return;
+        }
+
+        // Si pasa validaciones, guardamos
+        $client->contacts()->delete(); // Borramos los anteriores (todos) porque en el form se manejarán todos
+        foreach ($contacts as $contact) {
+            $client->contacts()->create([
+                'name' => $contact['name'],
+                'phone' => $contact['phone'],
+                'email' => $contact['email'] ?? null,
+                'notes' => $contact['notes'] ?? null,
+                'role' => $contact['role'],
+            ]);
+        }
+
+        $this->resetErrorBag();
+        $this->dispatch('contacts-saved');
     }
 }

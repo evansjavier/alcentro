@@ -33,4 +33,9 @@ class Client extends Model
     {
         return $this->belongsToMany(Premise::class, 'contracts');
     }
+
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class);
+    }
 }
