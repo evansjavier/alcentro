@@ -142,6 +142,9 @@
                                     @if($payment->reference_number)
                                         <div class="text-xs text-muted-foreground mt-0.5">Ref: {{ $payment->reference_number }}</div>
                                     @endif
+                                    @if($payment->notes)
+                                        <div class="text-xs text-muted-foreground mt-0.5 italic">{{ $payment->notes }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-3 text-right font-medium">${{ number_format((float) $payment->amount_received, 2, '.', ',') }}</td>
                                 <td class="px-5 py-3 text-right">
