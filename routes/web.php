@@ -31,13 +31,13 @@ Route::get('/clients', ClientsIndex::class)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/clients/create', \App\Livewire\Clients\Create::class)
         ->name('clients.create');
-        
+
     Route::get('/clients/{client}/edit', \App\Livewire\Clients\Edit::class)
         ->name('clients.edit');
 
     Route::get('/premises', PremisesIndex::class)
         ->name('premises.index');
-        
+
     Route::get('/premises/create', [PremiseController::class, 'create'])
         ->name('premises.create');
 
@@ -96,4 +96,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/invoices/{invoice}/payments/create', \App\Livewire\Payments\Create::class)->name('invoices.payments.create');
     Route::get('/payments/{payment}/edit', \App\Livewire\Payments\Edit::class)->name('payments.edit');
     Route::get('/payments', \App\Livewire\Payments\Index::class)->name('payments.index');
+
+    // Gastos
+    Route::get('/expense-concepts', \App\Livewire\ExpenseConcepts\Index::class)->name('expense_concepts.index');
+    Route::get('/expenses', \App\Livewire\Expenses\Index::class)->name('expenses.index');
+    Route::get('/expenses/create', \App\Livewire\Expenses\Create::class)->name('expenses.create');
+    Route::get('/expenses/{expense}', \App\Livewire\Expenses\Show::class)->name('expenses.show');
 });
