@@ -97,9 +97,9 @@ class Index extends Component
                 $ownersCount++;
             }
 
-            // Validar teléfono (ej: México 10 dígitos)
-            if (empty($contact['phone']) || !preg_match('/^[0-9]{10}$/', $contact['phone'])) {
-                $this->addError("contacts.{$contact['id']}", "El teléfono del contacto {$contact['name']} debe tener exactamente 10 dígitos numéricos.");
+            // Validar teléfono (7 a 15 dígitos)
+            if (empty($contact['phone']) || !preg_match('/^[0-9]{7,15}$/', $contact['phone'])) {
+                $this->addError("contacts.{$contact['id']}", "El teléfono del contacto {$contact['name']} debe tener entre 7 y 15 dígitos numéricos.");
                 return;
             }
 

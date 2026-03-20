@@ -168,9 +168,9 @@
 
                             <div class="sm:col-span-1">
                                 <label class="block text-xs text-secondary-foreground font-medium mb-1">Teléfono <span class="text-danger">*</span></label>
-                                <input x-model="contact.phone" type="text" maxlength="10"
-                                    @input="contact.phone = $event.target.value.replace(/\D/g, '').substring(0, 10)"
-                                    class="kt-input text-sm w-full" placeholder="10 dígitos">
+                                <input x-model="contact.phone" type="text" maxlength="15"
+                                    @input="contact.phone = $event.target.value.replace(/\D/g, '').substring(0, 15)"
+                                    class="kt-input text-sm w-full" placeholder="Entre 7 y 15 dígitos">
                             </div>
 
                             <div class="sm:col-span-1">
@@ -291,7 +291,7 @@
                 let c = this.contacts[index];
                 if (!c) return null;
                 // Only show errors if they attempted to type or we're validating
-                if (c.phone && c.phone.length !== 10) return "El teléfono requiere exactamente 10 dígitos.";
+                if (c.phone && !/^\d{7,15}$/.test(c.phone)) return "El teléfono requiere entre 7 y 15 dígitos.";
                 return null;
             },
 
@@ -306,8 +306,8 @@
                         alert(`El nombre es obligatorio en el contacto #${i+1}`);
                         return;
                     }
-                    if(!c.phone || c.phone.length !== 10) {
-                        alert(`El teléfono debe tener 10 dígitos en el contacto: ${c.name || '#'+(i+1)}`);
+                    if(!c.phone || !/^\d{7,15}$/.test(c.phone)) {
+                        alert(`El teléfono debe tener entre 7 y 15 dígitos en el contacto: ${c.name || '#'+(i+1)}`);
                         return;
                     }
                 }

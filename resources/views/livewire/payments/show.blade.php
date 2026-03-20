@@ -109,7 +109,7 @@
                     <span>Una vez aprobado, este monto se sumará al total pagado de la factura y no podrá ser editado.</span>
                 </div>
             </div>
-            
+
             <div class="mt-5 pt-5 border-t border-input flex flex-wrap items-center justify-end gap-3">
                 <button type="button" @click="$dispatch('close-modal', 'approval-modal')" class="kt-btn kt-btn-outline text-secondary-foreground">Cancelar</button>
                 <button wire:click="approvePayment" wire:loading.attr="disabled" class="kt-btn kt-btn-success">
