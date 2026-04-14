@@ -52,7 +52,7 @@
                     <i class="ki-filled ki-moon text-base text-muted-foreground">
                     </i>
                     <span class="text-2sm font-medium">
-                        Dark Mode
+                        Modo oscuro
                     </span>
                 </span>
                 <input class="kt-switch" data-kt-theme-switch-state="dark" data-kt-theme-switch-toggle="true"
