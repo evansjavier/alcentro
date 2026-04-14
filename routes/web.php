@@ -7,6 +7,7 @@ use App\Http\Controllers\ContractController;
 use App\Livewire\Clients\Index as ClientsIndex;
 use App\Livewire\Contracts\Index as ContractsIndex;
 use App\Livewire\Premises\Index as PremisesIndex;
+use App\Livewire\Dashboard\Index as DashboardIndex;
 use App\Livewire\Demo1\Index as Demo1Index;
 use App\Livewire\Demo2\Index as Demo2Index;
 use App\Livewire\Demo3\Index as Demo3Index;
@@ -78,7 +79,7 @@ Route::get('/demo8', Demo8Index::class)->name('demo8.index');
 Route::get('/demo9', Demo9Index::class)->name('demo9.index');
 Route::get('/demo10', Demo10Index::class)->name('demo10.index');
 
-Route::view('/dashboard', 'dashboard')
+Route::get('/dashboard', DashboardIndex::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
