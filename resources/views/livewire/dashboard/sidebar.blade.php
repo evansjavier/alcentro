@@ -34,15 +34,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="pt-2.5 px-3.5 mb-1">
-			<div class="kt-input">
-				<i class="ki-filled ki-magnifier">
-				</i>
-				<input class="min-w-0" placeholder="Search" type="text" value="">
-				<span class="text-xs text-secondary-foreground text-nowrap">
-					cmd + /
-				</span>
-			</div>
+		<div class="pt-2.5 px-3.5 mb-1 z-50">
+			<livewire:global-search />
 		</div>
 	</div>
 	<!-- End of Sidebar Header -->
