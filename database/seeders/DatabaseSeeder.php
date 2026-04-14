@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\ClientsSeeder;
 use Database\Seeders\ExpenseConceptsSeeder;
 use Database\Seeders\PremisesSeeder;
+use Spatie\Permission\Models\Role;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
@@ -18,13 +19,27 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::firstOrCreate(
+        // Crear roles
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $ownerRole = Role::firstOrCreate(['name' => 'owner']);
+
+        $adminUser = User::firstOrCreate(
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin User',
                 'password' => bcrypt('password'),
             ],
         );
+        $adminUser->assignRole($adminRole);
+
+        $ownerUser = User::firstOrCreate(
+            ['email' => 'owner@owner.com'],
+            [
+                'name' => 'Dueño',
+                'password' => bcrypt('password'),
+            ],
+        );
+        $ownerUser->assignRole($ownerRole);
 
         $this->call([
             ClientsSeeder::class,

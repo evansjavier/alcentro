@@ -2,14 +2,23 @@
 <div class="shrink-0" data-kt-dropdown="true" data-kt-dropdown-offset="10px, 10px" data-kt-dropdown-offset-rtl="-20px, 10px"
     data-kt-dropdown-placement="bottom-end" data-kt-dropdown-placement-rtl="bottom-start" data-kt-dropdown-trigger="click">
     <div class="shrink-0 cursor-pointer" data-kt-dropdown-toggle="true">
-        <img alt="" class="size-9 shrink-0 rounded-full border-2 border-green-500"
-            src="{{ asset('assets/media/avatars/300-2.png') }}" />
+            <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center size-9 shrink-0 rounded-full border-2 border-green-500 bg-green-100 text-green-600 font-bold uppercase">
+                    {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <span class="text-sm font-semibold leading-none text-foreground">
+                        {{ auth()->user()->name ?? 'User' }}
+                    </span>
+                </div>
+            </div>
     </div>
     <div class="kt-dropdown-menu w-[250px]" data-kt-dropdown-menu="true">
         <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5">
             <div class="flex items-center gap-2">
-                <img alt="" class="size-9 shrink-0 rounded-full border-2 border-green-500"
-                    src="{{ asset('assets/media/avatars/300-2.png') }}" />
+                <div class="flex items-center justify-center size-9 shrink-0 rounded-full border-2 border-green-500 bg-green-100 text-green-600 font-bold uppercase">
+                    {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                </div>
                 <div class="flex flex-col gap-1.5">
                     <span class="text-sm font-semibold leading-none text-foreground">
                         {{ auth()->user()->name ?? 'User' }}
@@ -21,7 +30,7 @@
                 </div>
             </div>
             <span class="kt-badge kt-badge-sm kt-badge-primary kt-badge-outline">
-                Admin
+                {{ auth()->user()->role_name }}
             </span>
         </div>
         <ul class="kt-dropdown-menu-sub">
