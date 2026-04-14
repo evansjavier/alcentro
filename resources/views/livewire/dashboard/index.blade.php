@@ -118,29 +118,20 @@
           </div>
             <div class="kt-card-content flex flex-col gap-4 p-5 lg:p-7.5 lg:pt-4">
              <div class="flex flex-col gap-1">
-            <span class="text-sm font-normal text-secondary-foreground">
-             Pagos del mes vs esperados
-            </span>
-            <div class="flex items-center gap-2.5 flex-wrap">
-             <span class="text-3xl font-semibold text-mono">
-              ${{ number_format($paidThisMonth, 0, '.', ',') }}
-             </span>
-             <span class="kt-badge kt-badge-outline kt-badge-primary kt-badge-sm">
-              de ${{ number_format($expectedThisMonth, 0, '.', ',') }} esperados
-             </span>
-             <span class="kt-badge kt-badge-success kt-badge-sm">
-              {{ $progress }}%
-             </span>
-            </div>
-             </div>
-             <div class="flex flex-col gap-1.5">
-            <div class="w-full bg-muted rounded-full h-3 overflow-hidden">
-             <div class="bg-primary h-full" style="width: {{ $progress }}%"></div>
-            </div>
-            <div class="flex items-center justify-between text-sm text-secondary-foreground">
-             <span>Pagado del mes</span>
-             <span>${{ number_format($paidThisMonth, 0, '.', ',') }} / ${{ number_format($expectedThisMonth, 0, '.', ',') }}</span>
-            </div>
+              <span class="text-sm font-normal text-secondary-foreground">
+               Pagos del mes vs esperados
+              </span>
+              <div class="flex items-center gap-2.5 flex-wrap">
+               <span class="text-3xl font-semibold text-mono">
+                ${{ number_format($paidThisMonth, 0, '.', ',') }}
+               </span>
+               <span class="kt-badge kt-badge-outline kt-badge-primary kt-badge-sm">
+                de ${{ number_format($expectedThisMonth, 0, '.', ',') }} esperados
+               </span>
+               <span class="kt-badge kt-badge-success kt-badge-sm">
+                {{ $progress }}%
+               </span>
+              </div>
              </div>
              <div class="border-b border-input">
              </div>
