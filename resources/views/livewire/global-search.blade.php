@@ -23,7 +23,7 @@
         <div
             x-show="open"
             x-transition
-            class="absolute bg-white border border-border rounded-xl shadow-lg mt-2 p-2" style="z-index: 50; width: 350px; max-height: 400px; overflow-y: auto;"
+            class="absolute bg-muted border border-border rounded-xl shadow-lg mt-2 p-2" style="z-index: 50; width: 350px; max-height: 400px; overflow-y: auto;"
             style="display: none;"
         >
             @if($clients->isEmpty() && $premises->isEmpty() && $invoices->isEmpty() && $payments->isEmpty() && $contracts->isEmpty())
@@ -61,7 +61,7 @@
 
             @if($contracts->isNotEmpty())
                 <div class="p-2">
-                    <div class="px-2 pb-1 text-xs font-semibold text-gray-500 uppercase">Contratos Activos</div>
+                    <div class="px-2 pb-1 text-xs font-bold uppercase text-gray-400">Contratos Activos</div>
                     @foreach($contracts as $contract)
                         <a href="{{ route('contracts.index', ['search' => $contract->premise->code]) }}" class="block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-sm flex items-center gap-2">
                             <i class="ki-duotone ki-document text-gray-400"></i>
