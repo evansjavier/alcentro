@@ -20,6 +20,11 @@
             <span class="text-sm text-secondary-foreground">{{ $expenses->firstItem() ?? 0 }}-{{ $expenses->lastItem() ?? 0 }} de {{ $expenses->total() }}</span>
         </div>
         <div class="flex items-center gap-2">
+            @if(count($selectedExpenses) > 0)
+                <button type="button" x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success kt-btn-sm font-semibold">
+                    <i class="ki-filled ki-check-circle"></i> Aprobar Seleccionados ({{ count($selectedExpenses) }})
+                </button>
+            @endif
             <a href="{{ route('expense_concepts.index') }}" class="kt-btn kt-btn-outline kt-btn-sm text-secondary-foreground">
                 <i class="ki-outline ki-setting-2"></i> Administrar Conceptos
             </a>
@@ -74,6 +79,9 @@
                 <table class="min-w-full text-sm">
                     <thead class="text-left bg-muted/60">
                         <tr class="text-secondary-foreground">
+                            <th class="px-4 py-3 w-10">
+                                <input type="checkbox" wire:model.live="selectAll" class="kt-checkbox">
+                            </th>
                             <th class="px-4 py-3 font-medium">Fecha</th>
                             <th class="px-4 py-3 font-medium">Concepto</th>
                             <th class="px-4 py-3 font-medium">Referencia</th>
@@ -85,7 +93,12 @@
                     </thead>
                     <tbody class="divide-y divide-input">
                         @forelse ($expenses as $expense)
-                            <tr>
+                            <tr class="{{ in_array($expense->id, $selectedExpenses) ? 'bg-primary/5' : '' }}">
+                                <td class="px-4 py-3">
+                                    @if(!$expense->is_approved)
+                                        <input type="checkbox" wire:model.live="selectedExpenses" value="{{ $expense->id }}" class="kt-checkbox">
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 font-semibold text-mono">
                                     {{ $expense->expense_date->format('Y-m-d') }}
                                 </td>
@@ -118,7 +131,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="7">
+                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="8">
                                     No hay gastos registrados con los filtros actuales.
                                 </td>
                             </tr>
@@ -127,7 +140,7 @@
                     @if($expenses->count() > 0)
                         <tfoot class="bg-muted/40 border-t border-input">
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-right font-medium text-secondary-foreground uppercase tracking-wider text-xs">
+                                <td colspan="5" class="px-4 py-4 text-right font-medium text-secondary-foreground uppercase tracking-wider text-xs">
                                     Total Gastos:
                                 </td>
                                 <td class="px-4 py-4 font-semibold text-base text-foreground">
@@ -145,4 +158,36 @@
             {{ $expenses->onEachSide(1)->links() }}
         </div>
     </div>
+
+    <!-- Modal de confirmación -->
+    <x-modal name="approval-modal" maxWidth="md">
+        <div class="">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-mono">Confirmar Aprobación Múltiple</h3>
+                <button type="button" @click="$dispatch('close-modal', 'approval-modal')" class="text-secondary-foreground hover:text-primary transition-colors">
+                    <i class="ki-filled ki-cross text-xl"></i>
+                </button>
+            </div>
+
+            <div class="kt-modal-body space-y-4 p-0 pr-1 pb-2">
+                <p class="text-muted-foreground text-sm">
+                    ¿Estás seguro de que deseas aprobar <strong class="text-foreground">{{ count($selectedExpenses) }}</strong> gasto(s) simultáneamente?
+                </p>
+                <div class="bg-yellow-50 text-yellow-800 p-3 rounded text-xs flex gap-2">
+                    <i class="ki-filled ki-warning text-base mt-0.5"></i>
+                    <span>Una vez aprobados, estos gastos no podrán revertirse ni eliminarse de la contabilidad aprobada.</span>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-5 border-t border-input flex flex-wrap items-center justify-end gap-3">
+                <button type="button" @click="$dispatch('close-modal', 'approval-modal')" class="kt-btn kt-btn-outline text-secondary-foreground">Cancelar</button>
+                <button wire:click="approveSelected" wire:loading.attr="disabled" class="kt-btn kt-btn-success">
+                    <span wire:loading.remove wire:target="approveSelected">Sí, Aprobar Todos</span>
+                    <span wire:loading wire:target="approveSelected" style="display: none;">
+                        <i class="ki-filled ki-loading animate-spin mr-2"></i> Procesando
+                    </span>
+                </button>
+            </div>
+        </div>
+    </x-modal>
 </div>

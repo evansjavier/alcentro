@@ -20,6 +20,9 @@ class Index extends Component
     public string $status = 'all';
     public int $perPage = 15;
 
+    public array $selectedExpenses = [];
+    public bool $selectAll = false;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'concept_id' => ['except' => ''],
@@ -42,10 +45,43 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function updatedSelectAll($value)
     {
-        $query = Expense::query()
-            ->with(['concept', 'user'])
+        if ($value) {
+            $this->selectedExpenses = $this->getFilteredQuery()->where('is_approved', false)->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedExpenses = [];
+        }
+    }
+
+    public function updatedSelectedExpenses()
+    {
+        $this->selectAll = false;
+    }
+
+    public function approveSelected()
+    {
+        if (empty($this->selectedExpenses)) {
+            return;
+        }
+
+        Expense::whereIn('id', $this->selectedExpenses)
+            ->where('is_approved', false)
+            ->update([
+                'is_approved' => true,
+                'approved_at' => now(),
+            ]);
+
+        session()->flash('success', 'Se han aprobado ' . count($this->selectedExpenses) . ' gasto(s) correctamente.');
+        $this->selectedExpenses = [];
+        $this->selectAll = false;
+
+        $this->dispatch('close-modal', 'approval-modal');
+    }
+
+    protected function getFilteredQuery()
+    {
+        return Expense::query()
             ->when($this->status !== 'all', function ($q) {
                 if ($this->status === 'approved') {
                     $q->approved();
@@ -69,6 +105,11 @@ class Index extends Component
             ->when($this->date_to, function ($q) {
                 $q->whereDate('expense_date', '<=', $this->date_to);
             });
+    }
+
+    public function render()
+    {
+        $query = clone $this->getFilteredQuery()->with(['concept', 'user']);
 
         $totalSum = (clone $query)->sum('amount');
 
