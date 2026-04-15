@@ -15,6 +15,9 @@ class Index extends Component
     public $status = "all";
     public $perPage = 10;
 
+    public array $selectedPayments = [];
+    public bool $selectAll = false;
+
     protected $queryString = [
         "search" => ["except" => ""],
         "method" => ["except" => "all"],
@@ -36,9 +39,43 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function updatedSelectAll($value)
     {
-        $payments = Payment::with(["invoice.client:id,name,tax_id"])
+        if ($value) {
+            $this->selectedPayments = $this->getFilteredQuery()->where('is_approved', false)->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedPayments = [];
+        }
+    }
+
+    public function updatedSelectedPayments()
+    {
+        $this->selectAll = false;
+    }
+
+    public function approveSelected()
+    {
+        if (empty($this->selectedPayments)) {
+            return;
+        }
+
+        Payment::whereIn('id', $this->selectedPayments)
+            ->where('is_approved', false)
+            ->update([
+                'is_approved' => true,
+                'approved_at' => now(),
+            ]);
+
+        session()->flash('success', 'Se han aprobado ' . count($this->selectedPayments) . ' pago(s) correctamente.');
+        $this->selectedPayments = [];
+        $this->selectAll = false;
+
+        $this->dispatch('close-modal', 'approval-modal');
+    }
+
+    protected function getFilteredQuery()
+    {
+        return Payment::with(["invoice.client:id,name,tax_id"])
             ->when($this->method !== "all", function ($query) {
                 $query->where("method", $this->method);
             })
@@ -58,7 +95,12 @@ class Index extends Component
                               $c->where("name", "like", $term)->orWhere("tax_id", "like", $term);
                           });
                     });
-            })
+            });
+    }
+
+    public function render()
+    {
+        $payments = $this->getFilteredQuery()
             ->orderByDesc("payment_date")
             ->orderByDesc("id")
             ->paginate($this->perPage);
