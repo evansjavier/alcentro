@@ -1,10 +1,22 @@
 @section('title', __('Detalles del gasto'))
 
 <div class="container-fixed">
+    @if(session('status'))
+        <div class="bg-green-50 text-green-700 p-4 rounded-lg flex items-center gap-2 mb-4 text-sm font-medium border border-green-100">
+            <i class="ki-outline ki-check-circle text-xl"></i>
+            {{ session('status') }}
+        </div>
+    @endif
+
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <div class="flex flex-col justify-center gap-2">
-            <h1 class="text-xl font-medium leading-none text-gray-900">
+            <h1 class="text-xl font-medium leading-none text-gray-900 flex items-center gap-2">
                 Gasto #{{ $expense->id }}
+                @if($expense->is_approved)
+                    <span class="badge badge-success badge-outline border px-2.5 py-1 text-xs font-medium rounded-full bg-green-500/10 text-green-700 border-green-200">Aprobado</span>
+                @else
+                    <span class="badge badge-warning badge-outline border px-2.5 py-1 text-xs font-medium rounded-full bg-yellow-500/10 text-yellow-700 border-yellow-200">Pendiente</span>
+                @endif
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-gray-700">
                 Información registrada el {{ $expense->created_at->format('d/m/Y H:i') }}
@@ -12,9 +24,11 @@
         </div>
 
         <div class="flex items-center gap-2.5">
-            <a class="btn btn-sm btn-light" href="{{ route('expenses.index') }}">
-                <i class="ki-outline ki-arrow-left"></i> Volver a Gastos
-            </a>
+            @if(!$expense->is_approved)
+            <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success">
+                <i class="ki-outline ki-check-circle"></i> Aprobar Gasto
+            </button>
+            @endif
         </div>
     </div>
 
@@ -142,4 +156,36 @@
         </div>
 
     </div>
+
+    <!-- Modal de confirmación -->
+    <x-modal name="approval-modal" maxWidth="md">
+        <div class="">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-mono">Confirmar Aprobación</h3>
+                <button type="button" @click="$dispatch('close-modal', 'approval-modal')" class="text-secondary-foreground hover:text-primary transition-colors">
+                    <i class="ki-outline ki-cross text-xl"></i>
+                </button>
+            </div>
+
+            <div class="kt-modal-body space-y-4 p-0 pr-1 pb-2">
+                <p class="text-muted-foreground text-sm">
+                    ¿Estás seguro de que deseas aprobar este gasto por <strong class="text-foreground">${{ number_format($expense->amount, 2) }}</strong>?
+                </p>
+                <div class="bg-yellow-50 text-yellow-800 p-3 rounded text-xs flex gap-2">
+                    <i class="ki-outline ki-warning text-base mt-0.5"></i>
+                    <span>Una vez aprobado, este gasto no podrá ser editado.</span>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-5 border-t border-input flex flex-wrap items-center justify-end gap-3">
+                <button type="button" @click="$dispatch('close-modal', 'approval-modal')" class="kt-btn kt-btn-outline text-secondary-foreground">Cancelar</button>
+                <button wire:click="approveExpense" wire:loading.attr="disabled" class="kt-btn kt-btn-success">
+                    <span wire:loading.remove wire:target="approveExpense">Sí, Aprobar Gasto</span>
+                    <span wire:loading wire:target="approveExpense" style="display: none;">
+                        <i class="ki-outline ki-loading animate-spin"></i> Aprobando...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </x-modal>
 </div>

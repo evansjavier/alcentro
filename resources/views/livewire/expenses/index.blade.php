@@ -31,6 +31,12 @@
 
     <div class="flex items-center flex-wrap gap-2.5 mb-4">
 
+        <select wire:model.live="status" class="kt-input w-44">
+            <option value="all">Todos los estados</option>
+            <option value="approved">Aprobados</option>
+            <option value="pending">Pendientes</option>
+        </select>
+
         <div class="flex">
             <label class="kt-input">
                 <i class="ki-filled ki-magnifier"></i>
@@ -73,6 +79,7 @@
                             <th class="px-4 py-3 font-medium">Referencia</th>
                             <th class="px-4 py-3 font-medium">Método Pago</th>
                             <th class="px-4 py-3 font-medium">Monto Total</th>
+                            <th class="px-4 py-3 font-medium">Estado</th>
                             <th class="px-4 py-3 font-medium text-right">Acciones</th>
                         </tr>
                     </thead>
@@ -96,6 +103,13 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 font-medium">${{ number_format((float) $expense->amount, 2, '.', ',') }}</td>
+                                <td class="px-4 py-3">
+                                    @if($expense->is_approved)
+                                        <span class="kt-badge kt-badge-outline bg-green-500/10 text-green-700 border-green-200 border px-2.5 py-1 text-xs font-medium rounded-full">Aprobado</span>
+                                    @else
+                                        <span class="kt-badge kt-badge-outline bg-yellow-500/10 text-yellow-700 border-yellow-200 border px-2.5 py-1 text-xs font-medium rounded-full">Pendiente</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-right">
                                     <a class="kt-btn kt-btn-light kt-btn-sm" href="{{ route('expenses.show', $expense) }}">
                                         Ver detalle
@@ -104,7 +118,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="6">
+                                <td class="px-4 py-6 text-center text-secondary-foreground" colspan="7">
                                     No hay gastos registrados con los filtros actuales.
                                 </td>
                             </tr>
@@ -119,6 +133,7 @@
                                 <td class="px-4 py-4 font-semibold text-base text-foreground">
                                     ${{ number_format((float) $totalSum, 2, '.', ',') }}
                                 </td>
+                                <td></td>
                                 <td></td>
                             </tr>
                         </tfoot>

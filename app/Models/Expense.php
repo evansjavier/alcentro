@@ -15,12 +15,21 @@ class Expense extends Model
         'notes',
         'attachment_path',
         'user_id',
+        'is_approved',
+        'approved_at',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'expense_date' => 'date',
+        'is_approved' => 'boolean',
+        'approved_at' => 'datetime',
     ];
+
+    public function scopeApproved($query)
+    {
+        return $query->where('is_approved', true);
+    }
 
     public static array $paymentMethods = [
         'transferencia' => 'Transferencia',

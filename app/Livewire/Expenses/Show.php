@@ -25,6 +25,21 @@ class Show extends Component
         return response()->download(storage_path('app/public/' . $this->expense->attachment_path));
     }
 
+    public function approveExpense()
+    {
+        if ($this->expense->is_approved) {
+            return;
+        }
+
+        $this->expense->update([
+            'is_approved' => true,
+            'approved_at' => now(),
+        ]);
+
+        session()->flash('status', 'Gasto aprobado exitosamente.');
+        $this->dispatch('close-modal', 'approval-modal');
+    }
+
     public function render()
     {
         return view('livewire.expenses.show');

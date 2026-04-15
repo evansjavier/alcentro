@@ -17,6 +17,7 @@ class Index extends Component
     public string $concept_id = '';
     public string $date_from = '';
     public string $date_to = '';
+    public string $status = 'all';
     public int $perPage = 15;
 
     protected $queryString = [
@@ -24,19 +25,20 @@ class Index extends Component
         'concept_id' => ['except' => ''],
         'date_from' => ['except' => ''],
         'date_to' => ['except' => ''],
+        'status' => ['except' => 'all'],
         'page' => ['except' => 1],
     ];
 
     public function updating($property): void
     {
-        if (in_array($property, ['search', 'concept_id', 'date_from', 'date_to'])) {
+        if (in_array($property, ['search', 'concept_id', 'date_from', 'date_to', 'status'])) {
             $this->resetPage();
         }
     }
 
     public function clearFilters()
     {
-        $this->reset(['search', 'concept_id', 'date_from', 'date_to']);
+        $this->reset(['search', 'concept_id', 'date_from', 'date_to', 'status']);
         $this->resetPage();
     }
 
@@ -44,6 +46,13 @@ class Index extends Component
     {
         $query = Expense::query()
             ->with(['concept', 'user'])
+            ->when($this->status !== 'all', function ($q) {
+                if ($this->status === 'approved') {
+                    $q->approved();
+                } else if ($this->status === 'pending') {
+                    $q->where('is_approved', false);
+                }
+            })
             ->when($this->search, function ($q) {
                 $term = '%' . $this->search . '%';
                 $q->where(function ($sub) use ($term) {
