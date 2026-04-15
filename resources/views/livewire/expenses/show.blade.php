@@ -24,7 +24,7 @@
         </div>
 
         <div class="flex items-center gap-2.5">
-            @if(!$expense->is_approved)
+            @if(!$expense->is_approved && auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
             <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success">
                 <i class="ki-outline ki-check-circle"></i> Aprobar Gasto
             </button>

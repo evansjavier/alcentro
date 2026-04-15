@@ -27,6 +27,10 @@ class Show extends Component
 
     public function approveExpense()
     {
+        if (!auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER)) {
+            abort(403, 'No tienes permisos para aprobar este gasto.');
+        }
+
         if ($this->expense->is_approved) {
             return;
         }

@@ -8,10 +8,12 @@
                     <i class="ki-filled ki-pencil"></i>
                     Editar
                 </a>
+                @if(auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
                 <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success">
                     <i class="ki-filled ki-check-circle"></i>
                     Aprobar Pago
                 </button>
+                @endif
             @endif
         </div>
 

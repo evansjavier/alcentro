@@ -7,7 +7,7 @@
             <span class="text-sm text-secondary-foreground">{{ $payments->firstItem() ?? 0 }}-{{ $payments->lastItem() ?? 0 }} de {{ $payments->total() }}</span>
         </div>
         <div class="flex items-center gap-2">
-            @if(count($selectedPayments) > 0)
+            @if(count($selectedPayments) > 0 && auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
                 <button type="button" x-data="" x-on:click.prevent="$dispatch('open-modal', 'approval-modal')" class="kt-btn kt-btn-success kt-btn-sm font-semibold">
                     <i class="ki-filled ki-check-circle"></i> Aprobar Seleccionados ({{ count($selectedPayments) }})
                 </button>
@@ -57,7 +57,9 @@
                     <thead class="text-left bg-muted/60">
                         <tr class="text-secondary-foreground">
                             <th class="px-4 py-3 w-10">
-                                <input type="checkbox" wire:model.live="selectAll" class="kt-checkbox">
+                                @if(auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
+                                    <input type="checkbox" wire:model.live="selectAll" class="kt-checkbox">
+                                @endif
                             </th>
                             <th class="px-4 py-3 font-medium">Fecha</th>
                             <th class="px-4 py-3 font-medium">Factura / Periodo</th>
@@ -72,7 +74,7 @@
                         @forelse ($payments as $payment)
                             <tr class="{{ in_array($payment->id, $selectedPayments) ? 'bg-primary/5' : '' }}">
                                 <td class="px-4 py-3">
-                                    @if(!$payment->is_approved)
+                                    @if(!$payment->is_approved && auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
                                         <input type="checkbox" wire:model.live="selectedPayments" value="{{ $payment->id }}" class="kt-checkbox">
                                     @endif
                                 </td>

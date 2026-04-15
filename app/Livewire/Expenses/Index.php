@@ -61,6 +61,10 @@ class Index extends Component
 
     public function approveSelected()
     {
+        if (!auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER)) {
+            abort(403, 'No tienes permisos para aprobar gastos.');
+        }
+
         if (empty($this->selectedExpenses)) {
             return;
         }

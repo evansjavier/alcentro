@@ -17,6 +17,10 @@ class Show extends Component
 
     public function approvePayment()
     {
+        if (!auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER)) {
+            abort(403, 'No tienes permisos para aprobar este pago.');
+        }
+
         if ($this->payment->is_approved) {
             return;
         }
