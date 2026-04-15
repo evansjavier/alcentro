@@ -217,7 +217,7 @@
             <div class="kt-card h-full">
                 <div class="kt-card-header">
                     <h3 class="kt-card-title">
-                        Pagos por mes
+                        Resumen financiero por mes
                     </h3>
                     <div class="flex gap-5" wire:ignore>
                         <select id="kt_select_year" class="kt-select min-w-[120px]" data-kt-select="true"
@@ -381,19 +381,23 @@
 @push('scripts')
 <script>
     document.addEventListener('livewire:initialized', () => {
-        const data = @json($monthlyPaymentsChart);
+        const paymentsData = @json($monthlyPaymentsChart);
+        const expensesData = @json($monthlyExpensesChart);
 
         var options = {
             series: [{
-                name: 'Pagos del mes',
-                data: data
+                name: 'Ingresos (Pagos)',
+                data: paymentsData
+            }, {
+                name: 'Gastos',
+                data: expensesData
             }],
             chart: {
-                type: 'area',
+                type: 'area', // or bar if you prefer, area usually looks good
                 height: 265,
                 toolbar: { show: false }
             },
-            colors: ['#3b82f6'],
+            colors: ['#3b82f6', '#ef4444'], // Blue for payments, Red for expenses
             fill: {
                 type: 'gradient',
                 gradient: {
@@ -442,8 +446,11 @@
 
             Livewire.on('update-chart', (event) => {
                 chart.updateSeries([{
-                    name: 'Pagos del mes',
-                    data: event.data
+                    name: 'Ingresos (Pagos)',
+                    data: event.payments
+                }, {
+                    name: 'Gastos',
+                    data: event.expenses
                 }]);
             });
         }

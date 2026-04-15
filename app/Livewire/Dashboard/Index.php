@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\Expense;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -20,13 +21,19 @@ class Index extends Component
     public function updatedSelectedYear()
     {
         $monthlyPaymentsChart = [];
+        $monthlyExpensesChart = [];
         for ($i = 1; $i <= 12; $i++) {
             $monthlyPaymentsChart[] = (float) Payment::approved()
                     ->whereYear('payment_date', $this->selectedYear)
                     ->whereMonth('payment_date', $i)
                     ->sum('amount_received');
+
+            $monthlyExpensesChart[] = (float) Expense::approved()
+                    ->whereYear('expense_date', $this->selectedYear)
+                    ->whereMonth('expense_date', $i)
+                    ->sum('amount');
         }
-        $this->dispatch('update-chart', data: $monthlyPaymentsChart);
+        $this->dispatch('update-chart', payments: $monthlyPaymentsChart, expenses: $monthlyExpensesChart);
     }
 
     public function render()
@@ -85,11 +92,17 @@ class Index extends Component
 
         // Chart Data (Pagos por mes en el año actual)
         $monthlyPaymentsChart = [];
+        $monthlyExpensesChart = [];
         for ($i = 1; $i <= 12; $i++) {
             $monthlyPaymentsChart[] = (float) Payment::approved()
                     ->whereYear('payment_date', $this->selectedYear)
                     ->whereMonth('payment_date', $i)
                     ->sum('amount_received');
+
+            $monthlyExpensesChart[] = (float) Expense::approved()
+                    ->whereYear('expense_date', $this->selectedYear)
+                    ->whereMonth('expense_date', $i)
+                    ->sum('amount');
         }
 
         // Últimas facturas generadas
@@ -138,6 +151,7 @@ class Index extends Component
             'pendingThisMonth',
             'pendingDiff',
             'monthlyPaymentsChart',
+            'monthlyExpensesChart',
             'latestInvoices',
             'clientsWithDebt'
         ))->layout('layouts.app');
