@@ -104,4 +104,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/expenses', \App\Livewire\Expenses\Index::class)->name('expenses.index');
     Route::get('/expenses/create', \App\Livewire\Expenses\Create::class)->name('expenses.create');
     Route::get('/expenses/{expense}', \App\Livewire\Expenses\Show::class)->name('expenses.show');
+
+    // Usuarios
+    Route::get('/users', \App\Livewire\Users\Index::class)->name('users.index');
 });

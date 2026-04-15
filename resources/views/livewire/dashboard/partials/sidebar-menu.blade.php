@@ -75,6 +75,27 @@
                 </a>
             </div>
 
+            @if(auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
+            <div class="kt-menu-item kt-menu-item-accordion" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
+                <div class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent">
+                    <span class="kt-menu-icon items-start text-lg text-secondary-foreground">
+                        <i class="ki-filled ki-setting-2"></i>
+                    </span>
+                    <span class="kt-menu-title text-sm text-foreground font-medium">Sistema</span>
+                    <span class="kt-menu-arrow text-muted-foreground">
+                        <i class="ki-filled ki-down text-xs"></i>
+                    </span>
+                </div>
+                <div class="kt-menu-accordion gap-px ps-7">
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('users.*') ? 'bg-secondary' : '' }}" href="{{ route('users.index') }}">
+                            <span class="kt-menu-title text-sm text-foreground">Usuarios</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
 </div>
