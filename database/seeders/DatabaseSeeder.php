@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('admin$$2026'),
             ],
         );
         $adminUser->assignRole($adminRole);
@@ -36,14 +36,14 @@ class DatabaseSeeder extends Seeder
             ['email' => 'owner@owner.com'],
             [
                 'name' => 'Dueño',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('owner__2026'),
             ],
         );
         $ownerUser->assignRole($ownerRole);
 
         $this->call([
-            ClientsSeeder::class,
-            PremisesSeeder::class,
+            // ClientsSeeder::class,
+            // PremisesSeeder::class,
             ExpenseConceptsSeeder::class,
         ]);
     }
