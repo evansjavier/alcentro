@@ -53,7 +53,7 @@ class Index extends Component
     public function createUser()
     {
         $this->reset(['userId', 'name', 'email', 'password', 'role']);
-        $this->role = Role::ROLE_ADMIN; 
+        $this->role = Role::ROLE_ADMIN;
         $this->resetValidation();
         $this->dispatch('open-modal', 'user-modal');
     }
@@ -78,11 +78,11 @@ class Index extends Component
             $user = User::findOrFail($this->userId);
             $user->name = $this->name;
             $user->email = $this->email;
-            
+
             if (!empty($this->password)) {
                 $user->password = Hash::make($this->password);
             }
-            
+
             $user->save();
             $user->syncRoles([$this->role]);
 
@@ -93,7 +93,7 @@ class Index extends Component
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
             ]);
-            
+
             $user->assignRole($this->role);
 
             session()->flash('success', 'Usuario creado correctamente.');
@@ -104,7 +104,7 @@ class Index extends Component
 
     public function render()
     {
-        if (!auth()->user()->hasRole(Role::ROLE_OWNER)) {
+        if (!auth()->user()->hasAnyRole([Role::ROLE_OWNER, Role::ROLE_ADMIN])) {
             abort(403, 'No tienes permisos para ver esta sección.');
         }
 

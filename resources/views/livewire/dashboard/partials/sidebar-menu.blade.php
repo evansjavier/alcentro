@@ -75,7 +75,7 @@
                 </a>
             </div>
 
-            @if(auth()->user()->hasRole(\App\Models\Role::ROLE_OWNER))
+            @if (auth()->user()->hasAnyRole([Role::ROLE_OWNER, Role::ROLE_ADMIN]))
             <div class="kt-menu-item kt-menu-item-accordion" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
                 <div class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent">
                     <span class="kt-menu-icon items-start text-lg text-secondary-foreground">
