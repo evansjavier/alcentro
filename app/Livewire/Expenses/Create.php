@@ -3,7 +3,7 @@
 namespace App\Livewire\Expenses;
 
 use App\Models\Expense;
-use App\Models\ExpenseConcept;
+use App\Models\Concept;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -14,7 +14,7 @@ class Create extends Component
 {
     use WithFileUploads;
 
-    public $expense_concept_id = '';
+    public $concept_id = '';
     public $amount = '';
     public $expense_date = '';
     public $payment_method = 'transferencia';
@@ -28,7 +28,7 @@ class Create extends Component
     }
 
     protected $rules = [
-        'expense_concept_id' => 'required|exists:expense_concepts,id',
+        'concept_id' => 'required|exists:concepts,id',
         'amount' => 'required|numeric|min:0.01',
         'expense_date' => 'required|date',
         'payment_method' => 'required|string',
@@ -47,7 +47,7 @@ class Create extends Component
         }
 
         Expense::create([
-            'expense_concept_id' => $this->expense_concept_id,
+            'concept_id' => $this->concept_id,
             'amount' => $this->amount,
             'expense_date' => $this->expense_date,
             'payment_method' => $this->payment_method,
@@ -64,7 +64,7 @@ class Create extends Component
     public function render()
     {
         return view('livewire.expenses.create', [
-            'concepts' => ExpenseConcept::where('is_active', true)->orderBy('name')->get(),
+            'concepts' => Concept::where('is_active', true)->orderBy('name')->get(),
             'paymentMethods' => Expense::$paymentMethods,
         ]);
     }

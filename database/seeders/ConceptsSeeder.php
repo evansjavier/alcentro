@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\ExpenseConcept;
+use App\Models\Concept;
 use Illuminate\Database\Seeder;
 
-class ExpenseConceptsSeeder extends Seeder
+class ConceptsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -30,7 +30,7 @@ class ExpenseConceptsSeeder extends Seeder
         ];
 
         foreach ($concepts as $concept) {
-            ExpenseConcept::firstOrCreate(
+            Concept::firstOrCreate(
                 ['name' => $concept],
                 ['is_active' => true]
             );

@@ -18,9 +18,9 @@
                     </div>
 
                     <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                        <label class="kt-form-label max-w-56" for="expense_concept_id">{{ __('Concepto') }}</label>
+                        <label class="kt-form-label max-w-56" for="concept_id">{{ __('Concepto') }}</label>
                         <div class="grow flex gap-2">
-                            <select class="kt-input flex-grow" id="expense_concept_id" wire:model="expense_concept_id">
+                            <select class="kt-input flex-grow" id="concept_id" wire:model="concept_id">
                                 <option value="">{{ __('Selecciona concepto') }}</option>
                                 @foreach ($concepts as $concept)
                                     <option value="{{ $concept->id }}">
@@ -28,11 +28,11 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <a class="kt-btn kt-btn-outline kt-btn-icon text-secondary-foreground" href="{{ route('expense_concepts.index') }}" title="Administrar Conceptos">
+                            <a class="kt-btn kt-btn-outline kt-btn-icon text-secondary-foreground" href="{{ route('concepts.index') }}" title="Administrar Conceptos">
                                 <i class="ki-outline ki-setting-2"></i>
                             </a>
                         </div>
-                        @error('expense_concept_id')
+                        @error('concept_id')
                             <div class="w-full lg:w-auto"><p class="text-sm text-destructive mt-1">{{ $message }}</p></div>
                         @enderror
                     </div>

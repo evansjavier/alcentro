@@ -25,7 +25,7 @@
                     <i class="ki-filled ki-check-circle"></i> Aprobar Seleccionados ({{ count($selectedExpenses) }})
                 </button>
             @endif
-            <a href="{{ route('expense_concepts.index') }}" class="kt-btn kt-btn-outline kt-btn-sm text-secondary-foreground">
+            <a href="{{ route('concepts.index') }}" class="kt-btn kt-btn-outline kt-btn-sm text-secondary-foreground">
                 <i class="ki-outline ki-setting-2"></i> Administrar Conceptos
             </a>
             <a class="kt-btn kt-btn-primary kt-btn-sm" href="{{ route('expenses.create') }}">

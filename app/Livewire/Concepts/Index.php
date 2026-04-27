@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Livewire\ExpenseConcepts;
+namespace App\Livewire\Concepts;
 
-use App\Models\ExpenseConcept;
+use App\Models\Concept;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -19,6 +19,8 @@ class Index extends Component
     public $conceptId = null;
     public string $name = '';
     public bool $is_active = true;
+    public bool $is_billable = false;
+    public int $billing_period_months = 1;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -28,6 +30,8 @@ class Index extends Component
     protected $rules = [
         'name' => 'required|string|max:255',
         'is_active' => 'boolean',
+        'is_billable' => 'boolean',
+        'billing_period_months' => 'required_if:is_billable,true|integer|min:1',
     ];
 
     public function updatingSearch(): void
@@ -37,17 +41,21 @@ class Index extends Component
 
     public function createConcept()
     {
-        $this->reset(['conceptId', 'name', 'is_active']);
+        $this->reset(['conceptId', 'name', 'is_active', 'is_billable', 'billing_period_months']);
         $this->is_active = true;
+        $this->is_billable = false;
+        $this->billing_period_months = 1;
         $this->resetValidation();
         $this->dispatch('open-modal', 'concept-modal');
     }
 
-    public function editConcept(ExpenseConcept $concept)
+    public function editConcept(Concept $concept)
     {
         $this->conceptId = $concept->id;
         $this->name = $concept->name;
         $this->is_active = $concept->is_active;
+        $this->is_billable = $concept->is_billable;
+        $this->billing_period_months = $concept->billing_period_months ?? 1;
 
         $this->resetValidation();
         $this->dispatch('open-modal', 'concept-modal');
@@ -58,17 +66,21 @@ class Index extends Component
         $this->validate();
 
         if ($this->conceptId) {
-            $concept = ExpenseConcept::find($this->conceptId);
+            $concept = Concept::find($this->conceptId);
             if ($concept) {
                 $concept->update([
                     'name' => $this->name,
                     'is_active' => $this->is_active,
+                    'is_billable' => $this->is_billable,
+                    'billing_period_months' => $this->is_billable ? $this->billing_period_months : 1,
                 ]);
             }
         } else {
-            ExpenseConcept::create([
+            Concept::create([
                 'name' => $this->name,
                 'is_active' => $this->is_active,
+                'is_billable' => $this->is_billable,
+                'billing_period_months' => $this->is_billable ? $this->billing_period_months : 1,
             ]);
         }
 
@@ -77,7 +89,7 @@ class Index extends Component
         session()->flash('success', $this->conceptId ? 'Concepto de gasto actualizado.' : 'Concepto de gasto creado.');
     }
 
-    public function toggleActive(ExpenseConcept $concept)
+    public function toggleActive(Concept $concept)
     {
         $concept->update(['is_active' => !$concept->is_active]);
         session()->flash('success', 'Estado del concepto de gasto actualizado.');
@@ -85,14 +97,14 @@ class Index extends Component
 
     public function render()
     {
-        $concepts = ExpenseConcept::query()
+        $concepts = Concept::query()
             ->when($this->search, function ($query) {
                 $term = '%' . $this->search . '%';
                 $query->where('name', 'like', $term);
             })
             ->orderBy('name')
             ->paginate($this->perPage);
-        return view('livewire.expense-concepts.index', [
+        return view('livewire.concepts.index', [
             'concepts' => $concepts,
         ]);
     }

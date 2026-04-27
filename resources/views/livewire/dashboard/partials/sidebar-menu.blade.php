@@ -67,7 +67,7 @@
                 </div>
             </div>
             <div class="kt-menu-item">
-                <a class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('expenses.*') || request()->routeIs('expense-concepts.*') ? 'bg-secondary' : '' }}" href="{{ route('expenses.index') }}">
+                <a class="kt-menu-link gap-2.5 py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('expenses.*') || request()->routeIs('concepts.*') ? 'bg-secondary' : '' }}" href="{{ route('expenses.index') }}">
                     <span class="kt-menu-icon items-start text-lg text-secondary-foreground">
                         <i class="ki-filled ki-handcart"></i>
                     </span>
@@ -90,6 +90,11 @@
                     <div class="kt-menu-item">
                         <a class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('users.*') ? 'bg-secondary' : '' }}" href="{{ route('users.index') }}">
                             <span class="kt-menu-title text-sm text-foreground">Usuarios</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent {{ request()->routeIs('concepts.*') ? 'bg-secondary' : '' }}" href="{{ route('concepts.index') }}">
+                            <span class="kt-menu-title text-sm text-foreground">Conceptos de Operación</span>
                         </a>
                     </div>
                 </div>

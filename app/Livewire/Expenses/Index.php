@@ -3,7 +3,7 @@
 namespace App\Livewire\Expenses;
 
 use App\Models\Expense;
-use App\Models\ExpenseConcept;
+use App\Models\Concept;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -101,7 +101,7 @@ class Index extends Component
                 });
             })
             ->when($this->concept_id, function ($q) {
-                $q->where('expense_concept_id', $this->concept_id);
+                $q->where('concept_id', $this->concept_id);
             })
             ->when($this->date_from, function ($q) {
                 $q->whereDate('expense_date', '>=', $this->date_from);
@@ -121,7 +121,7 @@ class Index extends Component
             ->orderByDesc('id')
             ->paginate($this->perPage);
 
-        $concepts = ExpenseConcept::where('is_active', true)->orderBy('name')->get();
+        $concepts = Concept::where('is_active', true)->orderBy('name')->get();
 
         return view('livewire.expenses.index', [
             'expenses' => $expenses,

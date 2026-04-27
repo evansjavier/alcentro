@@ -100,7 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payments', \App\Livewire\Payments\Index::class)->name('payments.index');
 
     // Gastos
-    Route::get('/expense-concepts', \App\Livewire\ExpenseConcepts\Index::class)->name('expense_concepts.index');
+    Route::get('/concepts', \App\Livewire\Concepts\Index::class)->name('concepts.index');
     Route::get('/expenses', \App\Livewire\Expenses\Index::class)->name('expenses.index');
     Route::get('/expenses/create', \App\Livewire\Expenses\Create::class)->name('expenses.create');
     Route::get('/expenses/{expense}', \App\Livewire\Expenses\Show::class)->name('expenses.show');

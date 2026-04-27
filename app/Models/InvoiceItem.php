@@ -19,6 +19,7 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'contract_id',
+        'concept_id',
         'type',
         'description',
         'amount',
@@ -55,5 +56,10 @@ class InvoiceItem extends Model
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class);
+    }
+
+    public function concept(): BelongsTo
+    {
+        return $this->belongsTo(Concept::class);
     }
 }

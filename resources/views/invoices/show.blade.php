@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="mb-8">
-                    <h4 class="text-sm font-semibold mb-3">Detalle de conceptos facturados</h4>
+                    <h4 class="text-sm font-semibold my-3">Detalle de conceptos facturados</h4>
                     <div class="border border-input rounded-lg overflow-hidden">
                         <table class="min-w-full text-sm">
                             <thead class="bg-muted/60">

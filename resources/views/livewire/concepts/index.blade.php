@@ -1,5 +1,5 @@
 <div>
-    @section('title', __('Conceptos de Gastos'))
+    @section('title', __('Conceptos de Operación'))
 
     @if(session('success'))
         <div class="mb-4 rounded-md bg-green-50 p-4 border border-green-200">
@@ -20,9 +20,6 @@
             <span class="text-sm text-secondary-foreground">{{ $concepts->firstItem() ?? 0 }}-{{ $concepts->lastItem() ?? 0 }} de {{ $concepts->total() }}</span>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('expenses.index') }}" class="kt-btn kt-btn-outline kt-btn-sm text-secondary-foreground">
-                <i class="ki-outline ki-arrow-left"></i> Volver a Gastos
-            </a>
             <button type="button" class="kt-btn kt-btn-primary kt-btn-sm" wire:click.prevent="createConcept">
                 <i class="ki-outline ki-plus"></i> Nuevo Concepto
             </button>
@@ -45,6 +42,7 @@
                     <thead class="text-left bg-muted/60">
                         <tr class="text-secondary-foreground">
                             <th class="px-4 py-3 font-medium">Nombre</th>
+                            <th class="px-4 py-3 font-medium text-center">Facturable</th>
                             <th class="px-4 py-3 font-medium text-center">Estado</th>
                             <th class="px-4 py-3 font-medium text-right">Acciones</th>
                         </tr>
@@ -54,6 +52,14 @@
                             <tr>
                                 <td class="px-4 py-3 font-medium">
                                     {{ $concept->name }}
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button
+                                        class="kt-badge kt-badge-outline px-2.5 py-1 text-xs font-medium rounded-full {{ $concept->is_billable ? 'kt-badge-primary' : '' }}"
+                                        title="Clic para cambiar si es facturable"
+                                    >
+                                        {{ $concept->is_billable ? $concept->billing_period_months . ' ' . ($concept->billing_period_months == 1 ? 'mes' : 'meses') : 'No' }}
+                                    </button>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <button
@@ -72,8 +78,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-4 py-6 text-center text-secondary-foreground">
-                                    No se encontraron conceptos de gastos registrados.
+                                <td colspan="4" class="px-4 py-6 text-center text-secondary-foreground">
+                                    No se encontraron conceptos de operación registrados.
                                 </td>
                             </tr>
                         @endforelse
@@ -115,6 +121,28 @@
                             <span class="block text-sm text-secondary-foreground font-medium">Concepto Activo</span>
                         </label>
                     </div>
+
+                    <div class="flex items-center gap-2 pt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" wire:model.live="is_billable" value="1" class="rounded border-input text-primary focus:ring-primary h-4 w-4" />
+                            <span class="block text-sm text-secondary-foreground font-medium">Concepto Facturable (Servicios a Arrendatarios)</span>
+                        </label>
+                    </div>
+
+                    @if($is_billable)
+                    <div class="flex flex-col gap-1.5 pt-2">
+                        <label class="block text-xs text-secondary-foreground font-medium mb-1" for="billing_period_months">Periodo de Facturación (en meses) <span class="text-danger">*</span></label>
+                        <select class="kt-input text-sm w-full" id="billing_period_months" wire:model="billing_period_months" required>
+                            <option value="1">Mensual (1 mes)</option>
+                            <option value="2">Bimestral (2 meses)</option>
+                            <option value="3">Trimestral (3 meses)</option>
+                            <option value="6">Semestral (6 meses)</option>
+                            <option value="12">Anual (12 meses)</option>
+                        </select>
+                        <p class="text-xs text-muted-foreground mt-1">Indique cada cuántos meses se le debe cobrar este servicio al inquilino.</p>
+                        @error('billing_period_months') <span class="text-xs text-danger mt-1">{{ $message }}</span> @enderror
+                    </div>
+                    @endif
                 </div>
 
                 <div class="mt-5 pt-5 border-t border-input flex flex-wrap items-center justify-end gap-3">

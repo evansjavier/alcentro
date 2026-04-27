@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Expense extends Model
 {
     protected $fillable = [
-        'expense_concept_id',
+        'concept_id',
         'amount',
         'expense_date',
         'payment_method',
@@ -41,7 +41,7 @@ class Expense extends Model
 
     public function concept()
     {
-        return $this->belongsTo(ExpenseConcept::class, 'expense_concept_id');
+        return $this->belongsTo(Concept::class, 'concept_id');
     }
 
     public function user()
