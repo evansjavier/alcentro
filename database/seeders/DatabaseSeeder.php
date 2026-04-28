@@ -41,10 +41,15 @@ class DatabaseSeeder extends Seeder
         );
         $ownerUser->assignRole($ownerRole);
 
-        $this->call([
-            // ClientsSeeder::class,
-            // PremisesSeeder::class,
+        $seeders = [
             ConceptsSeeder::class,
-        ]);
+        ];
+
+        // Permitir en entornos de desarrollo y staging la creación de datos de clientes y locales para pruebas
+        if (config('app.env') !== 'production') {
+            array_unshift($seeders, ClientsSeeder::class, PremisesSeeder::class);
+        }
+
+        $this->call($seeders);
     }
 }

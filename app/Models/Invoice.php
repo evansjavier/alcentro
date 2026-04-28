@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,10 @@ class Invoice extends Model
     public const STATUS_PARTIAL = 'partial';
     public const STATUS_PAID = 'paid';
 
+    public const DOC_STATUS_DRAFT = 'draft';
+    public const DOC_STATUS_ISSUED = 'issued';
+    public const DOC_STATUS_CANCELLED = 'cancelled';
+
     protected $fillable = [
         'client_id',
         'contract_id',
@@ -23,6 +28,7 @@ class Invoice extends Model
         'paid_amount',
         'due_date',
         'status',
+        'document_status',
     ];
 
     protected function casts(): array
@@ -32,6 +38,18 @@ class Invoice extends Model
             'paid_amount' => 'decimal:2',
             'due_date' => 'date',
         ];
+    }
+
+    public function printDocumentStatus(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match ($this->document_status) {
+                self::DOC_STATUS_DRAFT => 'Borrador',
+                self::DOC_STATUS_ISSUED => 'Emitida',
+                self::DOC_STATUS_CANCELLED => 'Cancelada',
+                default => $this->document_status,
+            }
+        );
     }
 
     public function client(): BelongsTo

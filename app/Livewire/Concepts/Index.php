@@ -20,7 +20,7 @@ class Index extends Component
     public string $name = '';
     public bool $is_active = true;
     public bool $is_billable = false;
-    public int $billing_period_months = 1;
+    public ?int $billing_period_months = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -31,7 +31,7 @@ class Index extends Component
         'name' => 'required|string|max:255',
         'is_active' => 'boolean',
         'is_billable' => 'boolean',
-        'billing_period_months' => 'required_if:is_billable,true|integer|min:1',
+        'billing_period_months' => 'required_if:is_billable,true|nullable|integer|min:1',
     ];
 
     public function updatingSearch(): void
@@ -72,7 +72,7 @@ class Index extends Component
                     'name' => $this->name,
                     'is_active' => $this->is_active,
                     'is_billable' => $this->is_billable,
-                    'billing_period_months' => $this->is_billable ? $this->billing_period_months : 1,
+                    'billing_period_months' => $this->is_billable ? $this->billing_period_months : null,
                 ]);
             }
         } else {
@@ -80,7 +80,7 @@ class Index extends Component
                 'name' => $this->name,
                 'is_active' => $this->is_active,
                 'is_billable' => $this->is_billable,
-                'billing_period_months' => $this->is_billable ? $this->billing_period_months : 1,
+                'billing_period_months' => $this->is_billable ? $this->billing_period_months : null,
             ]);
         }
 

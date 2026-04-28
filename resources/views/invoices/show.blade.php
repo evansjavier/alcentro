@@ -48,6 +48,9 @@
                         };
                     @endphp
                     <span class="kt-badge kt-badge-outline {{ $statusColor }} border px-2.5 py-1 text-xs font-medium rounded-full ml-3">{{ $statusLabel }}</span>
+                    @if($invoice->document_status === 'draft')
+                        <span class="kt-badge kt-badge-outline bg-gray-100 text-gray-700 border-gray-200 px-2.5 py-1 text-xs font-bold uppercase rounded-full ml-2 w-max">Borrador</span>
+                    @endif
                 </h3>
             </div>
             <div class="kt-card-content">

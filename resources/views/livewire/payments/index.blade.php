@@ -19,7 +19,7 @@
     @if(session('success'))
         <div class="mb-4 rounded-md bg-green-50 p-4 border border-green-200">
             <div class="flex">
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0 pr-2">
                     <i class="ki-filled ki-check-circle text-green-400"></i>
                 </div>
                 <div class="ml-3">

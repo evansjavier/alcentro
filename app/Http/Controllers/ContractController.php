@@ -130,11 +130,57 @@ class ContractController extends Controller
                 $today = \Carbon\Carbon::today();
                 $currentPeriod = $today->format('Y-m');
 
+                // 1. Crear factura borrador si hay conceptos
+                if (isset($conceptsToAttach) && $conceptsToAttach->isNotEmpty()) {
+                    $draftInvoice = \App\Models\Invoice::create([
+                        'client_id' => $contract->client_id,
+                        'contract_id' => $contract->id,
+                        'period' => $currentPeriod,
+                        'total_amount' => 0,
+                        'paid_amount' => 0,
+                        'due_date' => \Carbon\Carbon::create($today->year, $today->month, min($contract->payment_day, $today->daysInMonth))->format('Y-m-d'),
+                        'status' => \App\Models\Invoice::STATUS_PENDING,
+                        'document_status' => \App\Models\Invoice::DOC_STATUS_DRAFT,
+                    ]);
+
+                    $draftTotal = 0;
+                    foreach ($data['concepts'] as $conceptId => $conceptData) {
+                        if (empty($conceptData['selected'])) continue;
+                        
+                        $conceptModel = \App\Models\Concept::find($conceptId);
+                        $amt = $conceptData['amount'] ?? null;
+                        
+                        $startDate = \Carbon\Carbon::parse($data['start_date']);
+                        $months = (int) ($conceptData['billing_period_months'] ?? 1);
+                        $endDate = $startDate->copy()->addMonths($months);
+                        
+                        $conceptName = $conceptModel ? $conceptModel->name : "Concepto Adicional";
+                        $description = "{$conceptName}: {$startDate->format('d/m/Y')} al {$endDate->format('d/m/Y')}";
+                        
+                        $draftInvoice->items()->create([
+                            'contract_id' => $contract->id,
+                            'concept_id' => $conceptId,
+                            'type' => \App\Models\InvoiceItem::TYPE_UTILITIES,
+                            'description' => $description,
+                            'amount' => $amt,
+                        ]);
+                        
+                        if ($amt !== null) {
+                            $draftTotal += $amt;
+                        }
+                    }
+                    
+                    $draftInvoice->total_amount = $draftTotal;
+                    $draftInvoice->save();
+                }
+
+                // 2. Factura cerrada (regular) para las rentas/mantenimiento
                 $invoice = \App\Models\Invoice::firstOrCreate(
                     [
                         'client_id' => $contract->client_id,
                         'contract_id' => $contract->id,
                         'period' => $currentPeriod,
+                        'document_status' => \App\Models\Invoice::DOC_STATUS_ISSUED,
                     ],
                     [
                         'total_amount' => 0,

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('expense_concepts', function (Blueprint $table) {
-            $table->unsignedInteger('billing_period_months')->default(1)->after('is_billable')->comment('Periodo sugerido en meses para cobrar');
+            $table->unsignedInteger('billing_period_months')->nullable()->after('is_billable')->comment('Periodo sugerido en meses para cobrar');
         });
     }
 

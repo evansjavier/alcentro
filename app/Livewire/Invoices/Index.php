@@ -17,6 +17,8 @@ class Index extends Component
     public string $sort = 'latest';
     public int $perPage = 15;
 
+    public ?Invoice $invoiceToApprove = null;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => 'all'],
@@ -37,6 +39,25 @@ class Index extends Component
     public function updatingSort(): void
     {
         $this->resetPage();
+    }
+
+    public function confirmApprove(Invoice $invoice): void
+    {
+        $this->invoiceToApprove = $invoice;
+        $this->dispatch('open-modal', 'approval-modal');
+    }
+
+    public function approve(): void
+    {
+        if ($this->invoiceToApprove && $this->invoiceToApprove->document_status === Invoice::DOC_STATUS_DRAFT) {
+            $this->invoiceToApprove->update([
+                'document_status' => Invoice::DOC_STATUS_ISSUED,
+            ]);
+
+            session()->flash('status', 'Factura aprobada exitosamente.');
+            $this->dispatch('close-modal', 'approval-modal');
+            $this->invoiceToApprove = null;
+        }
     }
 
     public function render()
