@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Concept;
 use App\Models\Contract;
 use App\Models\Premise;
 use Illuminate\Http\RedirectResponse;
@@ -29,10 +30,12 @@ class ContractController extends Controller
         $premises = Premise::where('status', Premise::STATUS_AVAILABLE)
             ->orderBy('code')
             ->get(['id', 'code', 'square_meters']);
+        $billableConcepts = Concept::billable()->orderBy('name')->get(['id', 'name', 'billing_period_months']);
 
         return view('contracts.create', [
             'clients' => $clients,
             'premises' => $premises,
+            'billableConcepts' => $billableConcepts,
             'selectedPremiseId' => $selectedPremiseId,
         ]);
     }
@@ -57,13 +60,13 @@ class ContractController extends Controller
             'maintenance_pct' => ['required', 'numeric', 'min:0', 'max:50'],
             'advertising_pct' => ['required', 'numeric', 'min:0', 'max:50'],
             'start_date' => [
-                'required', 
+                'required',
                 'date',
                 function ($attribute, $value, $fail) use ($request) {
                     if (!$request->premise_id) return;
-                    
+
                     $endDate = $request->end_date;
-                    
+
                     $overlap = Contract::where('premise_id', $request->premise_id)
                         ->whereIn('status', [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE])
                         ->where(function ($query) use ($value, $endDate) {
@@ -82,6 +85,19 @@ class ContractController extends Controller
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['required', Rule::in(self::STATUSES)],
             'notes' => ['nullable', 'string'],
+            'concepts' => [
+                'nullable',
+                'array',
+                function ($attribute, $value, $fail) {
+                    $keys = array_keys($value);
+                    if (Concept::whereIn('id', $keys)->count() !== count($keys)) {
+                        $fail('Se seleccionó un concepto que no es válido o no existe.');
+                    }
+                }
+            ],
+            'concepts.*.selected' => ['nullable', 'boolean'],
+            'concepts.*.amount' => ['nullable', 'numeric', 'min:0'],
+            'concepts.*.billing_period_months' => ['required_with:concepts.*.selected', 'nullable', 'integer', 'min:1'],
         ]);
 
         DB::transaction(function () use ($data) {
@@ -97,11 +113,23 @@ class ContractController extends Controller
             if (in_array($data['status'], [Contract::STATUS_ACTIVO, Contract::STATUS_PENDIENTE], true)) {
                 $premise->update(['status' => Premise::STATUS_RENTED]);
             }
+            if (!empty($data['concepts'])) {
+                $conceptsToAttach = collect($data['concepts'])
+                    ->filter(fn($concept) => !empty($concept['selected']))
+                    ->map(fn($concept) => [
+                        'billing_period_months' => $concept['billing_period_months'],
+                        'amount' => $concept['amount'] ?? null,
+                    ]);
+
+                if ($conceptsToAttach->isNotEmpty()) {
+                    $contract->concepts()->attach($conceptsToAttach);
+                }
+            }
 
             if ($contract->status === Contract::STATUS_ACTIVO) {
                 $today = \Carbon\Carbon::today();
                 $currentPeriod = $today->format('Y-m');
-                
+
                 $invoice = \App\Models\Invoice::firstOrCreate(
                     [
                         'client_id' => $contract->client_id,
@@ -131,7 +159,7 @@ class ContractController extends Controller
     public function terminate(Contract $contract): View
     {
         $contract->load(['client', 'premise']);
-        
+
         return view('contracts.terminate', compact('contract'));
     }
 

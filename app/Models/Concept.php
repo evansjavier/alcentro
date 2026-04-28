@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Concept extends Model
 {
@@ -23,5 +25,17 @@ class Concept extends Model
     public function expenses()
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function scopeBillable(Builder $query): void
+    {
+        $query->where('is_billable', true);
+    }
+
+    public function contracts(): BelongsToMany
+    {
+        return $this->belongsToMany(Contract::class)
+            ->withPivot('billing_period_months', 'amount')
+            ->withTimestamps();
     }
 }

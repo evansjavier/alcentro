@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contract extends Model
@@ -48,6 +49,13 @@ class Contract extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function concepts(): BelongsToMany
+    {
+        return $this->belongsToMany(Concept::class)
+            ->withPivot('billing_period_months', 'amount')
+            ->withTimestamps();
     }
 
     public function premise(): BelongsTo

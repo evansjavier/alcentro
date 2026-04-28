@@ -110,5 +110,32 @@
                 @endif
             </div>
         </div>
+
+        @if($contract->concepts->count() > 0)
+        <div class="kt-card mt-5">
+            <div class="kt-card-header py-4">
+                <h3 class="kt-card-title">{{ __('Servicios') }}</h3>
+            </div>
+            <div class="kt-card-content p-5">
+                <div class="flex flex-col gap-3">
+                    @foreach($contract->concepts as $concept)
+                        <div class="flex flex-col gap-1 pb-3 border-b border-border last:border-0 last:pb-0">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base font-medium">{{ $concept->name }}</span>
+                                @if($concept->pivot->amount)
+                                    <span class="text-base font-semibold">${{ number_format((float) $concept->pivot->amount, 2, '.', ',') }}</span>
+                                @else
+                                    <span class="text-sm text-secondary-foreground">{{ __('Variable') }}</span>
+                                @endif
+                            </div>
+                            <div class="text-sm text-secondary-foreground">
+                                {{ __('Frecuencia:') }} <span class="font-medium text-foreground">{{ $concept->pivot->billing_period_months }} {{ trans_choice('mes|meses', $concept->pivot->billing_period_months) }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 @endsection

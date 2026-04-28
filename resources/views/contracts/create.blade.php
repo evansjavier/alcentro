@@ -164,7 +164,50 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-2">
+            <div class="kt-card pb-2.5 mt-5">
+                <div class="kt-card-header py-4">
+                    <h3 class="kt-card-title">{{ __('Servicios') }}</h3>
+                    <div class="flex items-center gap-2 text-sm text-secondary-foreground">
+                        {{ __('Selecciona los conceptos que aplican, su frecuencia de facturación y, de ser fija, una cuota adicional.') }}
+                    </div>
+                </div>
+                <div class="kt-card-content pt-5 pb-2">
+                    @foreach ($billableConcepts as $index => $concept)
+                        <div class="flex flex-col py-3">
+                            <div class="flex items-center flex-wrap sm:flex-nowrap w-full justify-between gap-3.5">
+                                <div class="flex md:items-center gap-3.5 w-full sm:w-auto">
+                                    <div class="">
+                                        <input type="checkbox" name="concepts[{{ $concept->id }}][selected]" value="1" class="kt-switch" id="concept_{{ $concept->id }}" {{ old("concepts.{$concept->id}.selected") ? 'checked' : '' }}>
+                                    </div>
+                                    <div class="flex flex-col justify-center gap-1.5 -mt-1 hover:cursor-pointer">
+                                        <div class="text-sm font-medium text-dark leading-5.5">{{ $concept->name }}</div>
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="text-xs font-normal text-secondary-foreground">{{ __('Frecuencia sugerida:') }} <span class="font-medium text-foreground">{{ $concept->billing_period_months }} {{ trans_choice('mes|meses', $concept->billing_period_months) }}</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap sm:flex-nowrap items-start text-end gap-3.5 ml-auto">
+                                    <div class="flex flex-col gap-1 text-start sm:text-end">
+                                        <label for="concept_frequency_{{ $concept->id }}" class="text-xs font-medium text-dark">Meses</label>
+                                        <input type="number" name="concepts[{{ $concept->id }}][billing_period_months]" id="concept_frequency_{{ $concept->id }}" class="kt-input w-[80px]" placeholder="Meses" value="{{ old("concepts.{$concept->id}.billing_period_months", $concept->billing_period_months) }}" step="1" min="1" title="Frecuencia en meses">
+                                    </div>
+                                    <div class="flex flex-col gap-1 text-start sm:text-end">
+                                        <label for="concept_amount_{{ $concept->id }}" class="text-xs font-medium text-dark">Monto (opcional)</label>
+                                        <input type="number" name="concepts[{{ $concept->id }}][amount]" id="concept_amount_{{ $concept->id }}" class="kt-input w-[120px]" placeholder="Ej. 1500" value="{{ old("concepts.{$concept->id}.amount") }}" step="0.01" min="0">
+                                        <span class="text-[10px] text-muted-foreground">{{ __('Dejar vacío si es variable') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (!$loop->last)
+                            <div data-orientation="horizontal" role="none" class="shrink-0 bg-border h-px w-full my-3.5"></div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 mt-5">
                 <a class="kt-btn kt-btn-outline" href="{{ route('premises.index') }}">
                     {{ __('Cancelar') }}
                 </a>

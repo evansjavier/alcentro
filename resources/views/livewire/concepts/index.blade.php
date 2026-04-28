@@ -14,6 +14,19 @@
         </div>
     @endif
 
+    <div class="mb-5 rounded-md kt-badge-outline kt-badge-info p-4 border">
+        <div class="flex">
+            <div class="flex-shrink-0 pr-2">
+                <i class="ki-filled ki-information text-blue-500"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-blue-800">
+                    <strong class="font-medium">Nota:</strong> Estos conceptos se utilizan tanto como <strong>servicios asociables al contrato</strong> como para la clasificación de los <strong>gastos operativos</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="flex items-center justify-between gap-2.5 flex-wrap mb-7.5">
         <div class="flex flex-col">
             <h3 class="text-base text-mono font-medium">Mostrando {{ $concepts->total() }} conceptos</h3>
